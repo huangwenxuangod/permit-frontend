@@ -1,0 +1,116 @@
+@use '../../styles/variables' as *;
+
+.camera-guide-page {
+  padding: $spacing-md;
+  min-height: 100vh;
+  background-color: $bg-body;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  
+  .spec-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: $text-main;
+    margin-right: $spacing-sm;
+  }
+  
+  .spec-tag {
+    font-size: 12px;
+    color: $primary;
+    background-color: rgba(59, 130, 246, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+}
+
+.guide-content {
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+  
+  .guide-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: $spacing-sm;
+    
+    .guide-num {
+      width: 20px;
+      height: 20px;
+      background-color: $primary;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 20px;
+      font-size: 12px;
+      margin-right: $spacing-sm;
+      flex-shrink: 0;
+    }
+    
+    .guide-text {
+      color: $text-main;
+      font-size: 14px;
+    }
+  }
+  
+  .illustration-area {
+    height: 200px;
+    background-color: $bg-input;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: $spacing-md;
+    
+    .illustration-placeholder {
+      color: $text-light;
+      font-size: 12px;
+    }
+  }
+}
+
+.spec-details {
+  margin-bottom: auto; /* Push buttons to bottom */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  
+  text {
+    font-size: 12px;
+    color: $text-secondary;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: $spacing-md;
+  padding-top: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  
+  button {
+    flex: 1;
+    font-size: 16px;
+    border-radius: $radius-full;
+    margin: 0;
+    
+    &::after { border: none; }
+  }
+  
+  .btn-secondary {
+    background-color: white;
+    color: $text-main;
+    border: 1px solid $border-color;
+  }
+  
+  .btn-primary {
+    background-color: $primary;
+    color: white;
+  }
+}

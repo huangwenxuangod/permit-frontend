@@ -1,0 +1,85 @@
+@use '../../styles/variables' as *;
+
+.detection-page {
+  padding: $spacing-lg;
+  min-height: 100vh;
+  background-color: $bg-body;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.status-text {
+  font-size: 16px;
+  color: $text-main;
+  margin-bottom: $spacing-md;
+}
+
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: $bg-input;
+  border-radius: $radius-full;
+  overflow: hidden;
+  margin-bottom: $spacing-xl;
+  
+  .progress-bar {
+    height: 100%;
+    background-color: $primary;
+    transition: width 0.1s linear;
+  }
+}
+
+.checklist {
+  width: 100%;
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: auto;
+  
+  .check-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    
+    &:last-child { margin-bottom: 0; }
+    
+    .check-icon {
+      width: 24px;
+      margin-right: $spacing-sm;
+      font-weight: bold;
+      
+      &.success { color: $success; }
+      &.processing { color: $primary; }
+      &.pending { color: $text-light; }
+    }
+    
+    .check-text {
+      font-size: 14px;
+      color: $text-main;
+    }
+  }
+}
+
+.action-buttons {
+  width: 100%;
+  display: flex;
+  gap: $spacing-md;
+  padding-bottom: $spacing-lg;
+  
+  button {
+    flex: 1;
+    font-size: 16px;
+    border-radius: $radius-full;
+    margin: 0;
+    
+    &::after { border: none; }
+  }
+  
+  .btn-secondary {
+    background-color: white;
+    color: $text-main;
+    border: 1px solid $border-color;
+  }
+}

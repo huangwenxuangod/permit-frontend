@@ -1,0 +1,137 @@
+@use '../../styles/variables' as *;
+
+.preview-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $bg-body;
+}
+
+.tabs {
+  display: flex;
+  background-color: $bg-card;
+  padding: $spacing-sm;
+  
+  .tab-item {
+    flex: 1;
+    text-align: center;
+    padding: $spacing-sm 0;
+    font-size: 14px;
+    color: $text-secondary;
+    position: relative;
+    
+    &.active {
+      color: $primary;
+      font-weight: bold;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 2px;
+        background-color: $primary;
+      }
+    }
+  }
+}
+
+.preview-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+  
+  .preview-image {
+    width: 240px;
+    height: 320px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-sm;
+    box-shadow: $shadow-lg;
+    
+    &.bg-blue { background-color: #3B82F6; color: white; }
+    &.bg-white { background-color: #FFFFFF; color: $text-main; border: 1px solid $border-color; }
+    &.bg-red { background-color: #EF4444; color: white; }
+    
+    .preview-placeholder {
+      font-size: 14px;
+    }
+  }
+}
+
+.tools-panel {
+  background-color: $bg-card;
+  padding: $spacing-md;
+  border-top-left-radius: $radius-lg;
+  border-top-right-radius: $radius-lg;
+  
+  .tool-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    
+    .tool-label {
+      width: 60px;
+      font-size: 14px;
+      color: $text-secondary;
+    }
+    
+    .color-options {
+      display: flex;
+      gap: $spacing-md;
+      
+      .color-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        border: 2px solid transparent;
+        
+        &.white { background-color: #fff; border-color: $border-color; color: $text-main; }
+        &.blue { background-color: #3B82F6; color: white; }
+        &.red { background-color: #EF4444; color: white; }
+        
+        &.active {
+          border-color: $text-main; /* Or a highlight ring */
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    .tool-btns {
+      display: flex;
+      gap: $spacing-md;
+      
+      .tool-btn {
+        padding: 4px 12px;
+        background-color: $bg-input;
+        border-radius: $radius-full;
+        font-size: 12px;
+        color: $text-main;
+      }
+    }
+  }
+}
+
+.footer {
+  padding: $spacing-md;
+  background-color: $bg-card;
+  padding-bottom: calc($spacing-md + env(safe-area-inset-bottom));
+  
+  .btn-primary {
+    background-color: $primary;
+    color: white;
+    border-radius: $radius-full;
+    
+    &::after { border: none; }
+  }
+}

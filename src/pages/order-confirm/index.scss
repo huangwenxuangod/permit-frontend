@@ -1,0 +1,141 @@
+@use '../../styles/variables' as *;
+
+.order-confirm-page {
+  min-height: 100vh;
+  background-color: $bg-body;
+  padding: $spacing-md;
+  padding-bottom: 100px;
+  box-sizing: border-box;
+}
+
+.order-card, .form-card {
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-sm;
+}
+
+.thumbnails {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  
+  .thumb-item {
+    width: 60px;
+    height: 80px;
+    background-color: $bg-input;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: $text-secondary;
+  }
+}
+
+.order-info {
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: $text-secondary;
+    
+    .value {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .price-original { text-decoration: line-through; }
+    .price-discount { color: $danger; }
+    .price-total { color: $text-main; font-weight: bold; font-size: 16px; }
+    
+    &.total-row {
+      margin-top: $spacing-sm;
+      padding-top: $spacing-sm;
+      border-top: 1px solid $border-color;
+      align-items: center;
+    }
+  }
+}
+
+.form-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 1px solid $bg-body;
+  
+  &:last-child { border-bottom: none; }
+  
+  .label {
+    font-size: 14px;
+    color: $text-main;
+  }
+  
+  .picker, .input {
+    text-align: right;
+    font-size: 14px;
+    color: $text-main;
+  }
+  
+  .placeholder {
+    color: $text-light;
+  }
+}
+
+.security-tags {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-lg;
+  margin-top: $spacing-md;
+  
+  .tag-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: $success;
+    
+    .icon {
+      margin-right: 4px;
+      font-weight: bold;
+    }
+  }
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: $bg-card;
+  padding: $spacing-md;
+  padding-bottom: calc($spacing-md + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: $shadow-lg;
+  
+  .total-info {
+    font-size: 14px;
+    
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+      color: $danger;
+      margin-left: 4px;
+    }
+  }
+  
+  .btn-primary {
+    background-color: $primary;
+    color: white;
+    border-radius: $radius-full;
+    padding: 0 32px;
+    margin: 0;
+    
+    &::after { border: none; }
+  }
+}

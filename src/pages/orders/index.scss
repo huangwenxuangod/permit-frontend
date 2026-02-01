@@ -1,0 +1,89 @@
+@use '../../styles/variables' as *;
+
+.orders-page {
+  min-height: 100vh;
+  background-color: $bg-body;
+  padding-bottom: 80px; /* TabBar space */
+}
+
+.warning-bar {
+  background-color: #FFFBEB; /* Yellow-50 */
+  color: #B45309; /* Yellow-700 */
+  padding: $spacing-sm $spacing-md;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.order-list {
+  padding: $spacing-md;
+}
+
+.order-item {
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  display: flex;
+  box-shadow: $shadow-sm;
+  
+  .order-thumb {
+    width: 60px;
+    height: 80px;
+    background-color: $bg-input;
+    border-radius: $radius-sm;
+    margin-right: $spacing-md;
+    flex-shrink: 0;
+  }
+  
+  .order-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    .order-header {
+      display: flex;
+      align-items: center;
+      
+      .order-name {
+        font-size: 16px;
+        font-weight: bold;
+        color: $text-main;
+        margin-right: $spacing-sm;
+      }
+      
+      .order-tag {
+        font-size: 10px;
+        color: $primary;
+        background-color: rgba(59, 130, 246, 0.1);
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+    }
+    
+    .order-details {
+      font-size: 12px;
+      color: $text-secondary;
+    }
+    
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .order-price {
+        font-size: 16px;
+        font-weight: bold;
+        color: $text-main;
+      }
+      
+      .order-status {
+        font-size: 14px;
+        
+        &.completed { color: $text-light; }
+        &.pending { color: $danger; }
+      }
+    }
+  }
+}

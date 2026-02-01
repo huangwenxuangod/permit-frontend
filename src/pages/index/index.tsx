@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, Button } from '@tarojs/components'
-import { useLoad } from '@tarojs/taro'
+import Taro, { useLoad } from '@tarojs/taro'
 import './index.scss'
 
 export default function Index() {
@@ -8,12 +8,12 @@ export default function Index() {
   })
 
   const services = [
-    { name: '制作证件照', icon: '📷', color: 'blue' },
-    { name: '修复老照片', icon: '✨', color: 'purple' },
-    { name: '回执专区', icon: '📄', color: 'orange' },
-    { name: '智能清晰', icon: '👁️', color: 'green' },
-    { name: '换底色', icon: '🎨', color: 'pink' },
-    { name: '改文件大小', icon: '📏', color: 'indigo' },
+    { name: '制作证件照', label: '拍', color: 'blue' },
+    { name: '修复老照片', label: '修', color: 'purple' },
+    { name: '回执专区', label: '回', color: 'orange' },
+    { name: '智能清晰', label: '清', color: 'green' },
+    { name: '换底色', label: '色', color: 'pink' },
+    { name: '改文件大小', label: '大', color: 'indigo' },
   ]
 
   const hotSpecs = [
@@ -29,6 +29,11 @@ export default function Index() {
     Taro.navigateTo({ url: '/pages/specs/index' })
   }
 
+  const handleSpecClick = (specName) => {
+    // Navigate to camera guide
+    Taro.navigateTo({ url: `/pages/camera-guide/index?spec=${specName}` })
+  }
+
   return (
     <View className='index-page'>
       {/* Header Section */}
@@ -41,7 +46,7 @@ export default function Index() {
           <View className='hero-content'>
             <Text className='hero-title'>智能证件照制作</Text>
             <Text className='hero-subtitle'>专业 · 快捷 · 合规</Text>
-            <Button className='hero-btn'>立即制作</Button>
+            <Button className='hero-btn' onClick={handleMoreSpecs}>立即制作</Button>
           </View>
         </View>
       </View>
@@ -50,9 +55,9 @@ export default function Index() {
       <View className='section-container'>
         <View className='services-grid'>
           {services.map((item, index) => (
-            <View key={index} className='service-item'>
+            <View key={index} className='service-item' onClick={handleMoreSpecs}>
               <View className={`service-icon bg-${item.color}-100`}>
-                <Text>{item.icon}</Text>
+                <Text>{item.label}</Text>
               </View>
               <Text className='service-name'>{item.name}</Text>
             </View>
@@ -67,12 +72,12 @@ export default function Index() {
             <Text className='section-title'>热门证照规格</Text>
             <Text className='section-tag'>HOT</Text>
           </View>
-          <Text className='section-more'>更多规格 &gt;</Text>
+          <Text className='section-more' onClick={handleMoreSpecs}>更多规格 &gt;</Text>
         </View>
         
         <View className='specs-list'>
           {hotSpecs.map((spec, index) => (
-            <View key={index} className='spec-card'>
+            <View key={index} className='spec-card' onClick={() => handleSpecClick(spec.name)}>
               <View className='spec-info'>
                 <Text className='spec-name'>{spec.name}</Text>
                 <Text className='spec-size'>{spec.size}</Text>
@@ -91,7 +96,7 @@ export default function Index() {
       
       {/* Floating CS Button */}
       <View className='floating-cs'>
-        <Text>🎧</Text>
+        <Text>服</Text>
       </View>
     </View>
   )
