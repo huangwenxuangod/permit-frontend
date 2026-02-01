@@ -1,35 +1,36 @@
+@use '../../styles/variables' as *;
 .index-page {
   padding-bottom: 80px; /* Space for TabBar if fixed, or just bottom spacing */
 }
 
 .header-section {
-  padding: var(--spacing-md);
-  background-color: var(--bg-card);
-  padding-bottom: var(--spacing-lg);
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
+  padding: $spacing-md;
+  background-color: $bg-card;
+  padding-bottom: $spacing-lg;
+  border-bottom-left-radius: $radius-lg;
+  border-bottom-right-radius: $radius-lg;
 }
 
 .brand-tag {
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-md);
+  color: $text-secondary;
+  margin-bottom: $spacing-md;
   
   .tag-icon {
-    color: var(--primary);
+    color: $primary;
     font-weight: bold;
     margin-right: 4px;
   }
 }
 
 .hero-banner {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  color: var(--text-white);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  color: $text-white;
+  box-shadow: $shadow-md;
   min-height: 140px;
   display: flex;
   align-items: center;
@@ -42,23 +43,23 @@
     font-size: 24px;
     font-weight: bold;
     display: block;
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: $spacing-xs;
   }
   
   .hero-subtitle {
     font-size: 14px;
     opacity: 0.9;
     display: block;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: $spacing-md;
   }
   
   .hero-btn {
     display: inline-flex;
-    background-color: var(--text-white);
-    color: var(--primary);
+    background-color: $text-white;
+    color: $primary;
     font-size: 14px;
     padding: 6px 16px;
-    border-radius: var(--radius-full);
+    border-radius: $radius-full;
     border: none;
     line-height: 1.5;
     margin: 0;
@@ -68,17 +69,17 @@
 }
 
 .section-container {
-  padding: var(--spacing-md);
-  margin-top: var(--spacing-sm);
+  padding: $spacing-md;
+  margin-top: $spacing-sm;
 }
 
 .services-grid {
   display: flex;
   flex-wrap: wrap;
-  background-color: var(--bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md) 0;
-  box-shadow: var(--shadow-sm);
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md 0;
+  box-shadow: $shadow-sm;
   
   .service-item {
     width: 33.33%;
@@ -86,23 +87,23 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-md) 0;
+    padding: $spacing-md 0;
     
     .service-icon {
       width: 48px;
       height: 48px;
-      border-radius: var(--radius-full);
-      background-color: var(--bg-input);
+      border-radius: $radius-full;
+      background-color: $bg-input;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
-      margin-bottom: var(--spacing-sm);
+      margin-bottom: $spacing-sm;
     }
     
     .service-name {
       font-size: 12px;
-      color: var(--text-main);
+      color: $text-main;
     }
   }
 }
@@ -111,7 +112,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: $spacing-md;
   
   .section-title-wrapper {
     display: flex;
@@ -121,13 +122,13 @@
   .section-title {
     font-size: 18px;
     font-weight: bold;
-    color: var(--text-main);
-    margin-right: var(--spacing-sm);
+    color: $text-main;
+    margin-right: $spacing-sm;
   }
   
   .section-tag {
     background-color: #FEE2E2; /* Red-100 */
-    color: var(--danger);
+    color: $danger;
     font-size: 10px;
     padding: 2px 4px;
     border-radius: 4px;
@@ -136,23 +137,23 @@
   
   .section-more {
     font-size: 12px;
-    color: var(--text-light);
+    color: $text-light;
   }
 }
 
 .specs-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: $spacing-sm;
   
   .spec-card {
-    background-color: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-md);
+    background-color: $bg-card;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--shadow-sm);
+    box-shadow: $shadow-sm;
     
     .spec-info {
       display: flex;
@@ -161,13 +162,13 @@
       .spec-name {
         font-size: 16px;
         font-weight: 500;
-        color: var(--text-main);
+        color: $text-main;
         margin-bottom: 4px;
       }
       
       .spec-size {
         font-size: 12px;
-        color: var(--text-light);
+        color: $text-light;
       }
     }
     
@@ -181,16 +182,16 @@
 .floating-cs {
   position: fixed;
   bottom: 100px;
-  right: var(--spacing-md);
+  right: $spacing-md;
   width: 48px;
   height: 48px;
-  background-color: var(--bg-card);
-  border-radius: var(--radius-full);
+  background-color: $bg-card;
+  border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
+  box-shadow: $shadow-md;
+  border: 1px solid $border-color;
   font-size: 24px;
   z-index: 100;
 }

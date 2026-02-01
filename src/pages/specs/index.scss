@@ -1,6 +1,7 @@
+@use '../../styles/variables' as *;
 /* Styles for Spec Search Page */
 .specs-page {
-  padding: var(--spacing-md);
+  padding: $spacing-md;
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -9,34 +10,34 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: var(--bg-body);
-  padding-bottom: var(--spacing-sm);
-  margin: calc(var(--spacing-md) * -1); /* Negative margin to cover padding */
-  padding: var(--spacing-md); /* Restore padding */
+  background-color: $bg-body;
+  padding-bottom: $spacing-sm;
+  margin: -$spacing-md;
+  padding: $spacing-md;
 }
 
 .search-input-wrapper {
-  background-color: var(--bg-card);
-  border-radius: var(--radius-full);
+  background-color: $bg-card;
+  border-radius: $radius-full;
   padding: 8px 16px;
   display: flex;
   align-items: center;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid $border-color;
+  box-shadow: $shadow-sm;
   
   .search-icon {
     margin-right: 8px;
-    color: var(--text-light);
+    color: $text-light;
   }
   
   .search-input {
     flex: 1;
     font-size: 14px;
-    color: var(--text-main);
+    color: $text-main;
   }
   
   .search-btn {
-    color: var(--primary);
+    color: $primary;
     font-size: 14px;
     font-weight: 500;
     padding: 4px 8px;
@@ -46,23 +47,23 @@
 .filter-tabs {
   display: flex;
   white-space: nowrap;
-  margin-top: var(--spacing-md);
+  margin-top: $spacing-md;
   width: 100%;
   
   .tab-item {
     display: inline-block;
     padding: 6px 16px;
-    border-radius: var(--radius-full);
-    background-color: var(--bg-card);
-    color: var(--text-secondary);
+    border-radius: $radius-full;
+    background-color: $bg-card;
+    color: $text-secondary;
     font-size: 14px;
-    margin-right: var(--spacing-sm);
+    margin-right: $spacing-sm;
     border: 1px solid transparent;
     transition: all 0.2s;
     
     &.active {
       background-color: rgba(59, 130, 246, 0.1); /* primary-100 */
-      color: var(--primary);
+      color: $primary;
       border-color: rgba(59, 130, 246, 0.2);
       font-weight: 500;
     }
@@ -76,20 +77,20 @@
 .specs-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-md);
-  padding-bottom: var(--spacing-xl);
-  margin-top: var(--spacing-sm);
+  gap: $spacing-md;
+  padding-bottom: $spacing-xl;
+  margin-top: $spacing-sm;
 }
 
 .spec-card {
-  background-color: var(--bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: var(--shadow-sm);
+  box-shadow: $shadow-sm;
   position: relative;
   overflow: hidden;
   transition: transform 0.2s;
@@ -101,10 +102,10 @@
   .spec-preview {
     width: 60px;
     height: 80px;
-    background-color: var(--bg-input);
-    margin-bottom: var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
+    background-color: $bg-input;
+    margin-bottom: $spacing-sm;
+    border-radius: $radius-sm;
+    border: 1px solid $border-color;
     position: relative;
     
     /* Mock silhouette */
@@ -135,14 +136,14 @@
   .spec-name {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-main);
+    color: $text-main;
     margin-bottom: 4px;
   }
   
   .spec-size {
     font-size: 12px;
-    color: var(--text-light);
-    margin-bottom: var(--spacing-sm);
+    color: $text-light;
+    margin-bottom: $spacing-sm;
   }
   
   .spec-tags {

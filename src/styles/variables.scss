@@ -1,0 +1,38 @@
+/* Spacing */
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 32rpx;
+$spacing-lg: 48rpx;
+$spacing-xl: 64rpx;
+
+/* Radius */
+$radius-sm: 8rpx;
+$radius-md: 16rpx;
+$radius-lg: 24rpx;
+$radius-full: 19998rpx;
+
+/* Colors */
+$primary: #3B82F6;
+$primary-light: #60A5FA;
+$primary-dark: #2563EB;
+$secondary: #64748B;
+$success: #22C55E;
+$warning: #F59E0B;
+$danger: #EF4444;
+$cta: #F97316;
+
+$bg-body: #F8FAFC;
+$bg-card: #FFFFFF;
+$bg-input: #F1F5F9;
+
+$text-main: #1E293B;
+$text-secondary: #64748B;
+$text-light: #94A3B8;
+$text-white: #FFFFFF;
+
+$border-color: #E2E8F0;
+
+/* Shadows */
+$shadow-sm: 0 2rpx 4rpx 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 8rpx 12rpx -2rpx rgba(0, 0, 0, 0.1), 0 4rpx 8rpx -4rpx rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 20rpx 30rpx -6rpx rgba(0, 0, 0, 0.1), 0 8rpx 12rpx -8rpx rgba(0, 0, 0, 0.1);
