@@ -5,11 +5,10 @@ import prodConfig from './prod'
 import path from 'path'
 import fs from 'fs'
 
-// Simple .env parser for the config file scope
 const rootPath = process.cwd()
-const envPath = path.resolve(rootPath, '.env')
-if (fs.existsSync(envPath)) {
-  const envConfig = fs.readFileSync(envPath, 'utf-8')
+function loadEnv(file: string) {
+  if (!fs.existsSync(file)) return
+  const envConfig = fs.readFileSync(file, 'utf-8')
   envConfig.split('\n').forEach(line => {
     const match = line.match(/^([^=]+)=(.*)$/)
     if (match) {
@@ -17,16 +16,13 @@ if (fs.existsSync(envPath)) {
     }
   })
 }
+loadEnv(path.resolve(rootPath, '.env.local'))
+loadEnv(path.resolve(rootPath, '.env'))
 
-// Update project.config.json with APP_ID from env
-const appId = process.env.TARO_APP_ID
-if (appId) {
-  const projectConfigPath = path.resolve(rootPath, 'project.config.json')
-  if (fs.existsSync(projectConfigPath)) {
-    const projectConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf-8'))
-    projectConfig.appid = appId
-    fs.writeFileSync(projectConfigPath, JSON.stringify(projectConfig, null, 2))
-  }
+const projectConfigPath = path.resolve(rootPath, 'project.config.json')
+if (fs.existsSync(projectConfigPath)) {
+  const projectConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf-8'))
+  fs.writeFileSync(projectConfigPath, JSON.stringify(projectConfig, null, 2))
 }
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
@@ -34,7 +30,7 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
   const baseConfig: UserConfigExport<'vite'> = {
     projectName: 'permit-frontend',
     date: '2026-2-1',
-    designWidth: 750,
+    designWidth: 375,
     deviceRatio: {
       640: 2.34 / 2,
       750: 1,
@@ -46,9 +42,6 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     plugins: [
       "@tarojs/plugin-generator"
     ],
-    defineConstants: {
-      'process.env.TARO_APP_ID': JSON.stringify(process.env.TARO_APP_ID),
-    },
     sass: {
       // @ts-ignore
       silenceDeprecations: ['legacy-js-api'],

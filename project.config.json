@@ -2,12 +2,12 @@
   "miniprogramRoot": "./dist",
   "projectname": "permit-frontend",
   "description": "一照通",
-  "appid": "touristappid",
+  "appid": "wx42fe8b53069f9f20",
   "setting": {
     "urlCheck": true,
     "es6": false,
     "enhance": false,
-    "compileHotReLoad": false,
+    "compileHotReLoad": true,
     "postcss": false,
     "minified": false
   },
