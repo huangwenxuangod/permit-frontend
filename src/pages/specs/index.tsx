@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
 
+// Specs Search Page
 export default function SpecsPage() {
   const [activeTab, setActiveTab] = useState('全部')
   const [searchQuery, setSearchQuery] = useState('')

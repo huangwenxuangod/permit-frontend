@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "./dist",
   "projectname": "permit-frontend",
-  "description": "一照通前端",
+  "description": "一照通",
   "appid": "touristappid",
   "setting": {
     "urlCheck": true,

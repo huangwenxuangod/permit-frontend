@@ -2,6 +2,32 @@ import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 
 import devConfig from './dev'
 import prodConfig from './prod'
+import path from 'path'
+import fs from 'fs'
+
+// Simple .env parser for the config file scope
+const rootPath = process.cwd()
+const envPath = path.resolve(rootPath, '.env')
+if (fs.existsSync(envPath)) {
+  const envConfig = fs.readFileSync(envPath, 'utf-8')
+  envConfig.split('\n').forEach(line => {
+    const match = line.match(/^([^=]+)=(.*)$/)
+    if (match) {
+      process.env[match[1].trim()] = match[2].trim()
+    }
+  })
+}
+
+// Update project.config.json with APP_ID from env
+const appId = process.env.TARO_APP_ID
+if (appId) {
+  const projectConfigPath = path.resolve(rootPath, 'project.config.json')
+  if (fs.existsSync(projectConfigPath)) {
+    const projectConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf-8'))
+    projectConfig.appid = appId
+    fs.writeFileSync(projectConfigPath, JSON.stringify(projectConfig, null, 2))
+  }
+}
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'vite'>(async (merge, { command, mode }) => {
@@ -21,6 +47,11 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
       "@tarojs/plugin-generator"
     ],
     defineConstants: {
+      'process.env.TARO_APP_ID': JSON.stringify(process.env.TARO_APP_ID),
+    },
+    sass: {
+      // @ts-ignore
+      silenceDeprecations: ['legacy-js-api'],
     },
     copy: {
       patterns: [
