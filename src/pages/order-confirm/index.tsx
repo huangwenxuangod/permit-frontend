@@ -1,3 +1,4 @@
+import React from 'react'
 import { View, Text, Button, Input, Picker } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'

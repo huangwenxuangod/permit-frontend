@@ -1,3 +1,4 @@
+import React from 'react'
 import { View, Text, Button } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import Taro from '@tarojs/taro'

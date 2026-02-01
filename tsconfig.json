@@ -14,9 +14,10 @@
     "strictNullChecks": true,
     "sourceMap": true,
     "rootDir": ".",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "allowJs": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "typeRoots": [
       "node_modules/@types"
     ],

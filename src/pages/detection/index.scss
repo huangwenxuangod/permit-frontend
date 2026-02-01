@@ -82,4 +82,9 @@
     color: $text-main;
     border: 1px solid $border-color;
   }
+  
+  .btn-primary {
+    background-color: $primary;
+    color: white;
+  }
 }

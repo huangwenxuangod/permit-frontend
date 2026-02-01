@@ -1,3 +1,4 @@
+import React from 'react'
 import { View, Text, Button } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import './index.scss'

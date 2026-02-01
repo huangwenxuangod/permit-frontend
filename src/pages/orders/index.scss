@@ -16,14 +16,14 @@
 }
 
 .order-list {
-  padding: $spacing-md;
+  padding: 0; /* ScrollView 在 webview 模式不支持 padding，使用子项左右外边距 */
 }
 
 .order-item {
   background-color: $bg-card;
   border-radius: $radius-lg;
   padding: $spacing-md;
-  margin-bottom: $spacing-md;
+  margin: 0 $spacing-md $spacing-md;
   display: flex;
   box-shadow: $shadow-sm;
   

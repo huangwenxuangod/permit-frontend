@@ -1,6 +1,6 @@
+import React from 'react'
 import { View, Text, Input, ScrollView } from '@tarojs/components'
 import { useState } from 'react'
-import Taro from '@tarojs/taro'
 import './index.scss'
 
 // Specs Search Page

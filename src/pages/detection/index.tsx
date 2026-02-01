@@ -1,3 +1,4 @@
+import React from 'react'
 import { View, Text, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
@@ -14,25 +15,12 @@ export default function DetectionPage() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer)
-          // Navigate to preview after short delay
-          setTimeout(() => {
-             Taro.navigateTo({ url: '/pages/preview/index' })
-          }, 500)
-          return 100
-        }
-        return prev + 2
-      })
-    }, 100) // 5 seconds total roughly
-
-    // Simulate checklist updates
+      setProgress(prev => (prev >= 100 ? 100 : prev + 2))
+    }, 100)
     setTimeout(() => updateItemStatus(0, 'success'), 1000)
     setTimeout(() => updateItemStatus(1, 'success'), 2500)
     setTimeout(() => updateItemStatus(2, 'success'), 3500)
     setTimeout(() => updateItemStatus(3, 'processing'), 4000)
-
     return () => clearInterval(timer)
   }, [])
 
@@ -65,6 +53,7 @@ export default function DetectionPage() {
 
       <View className='action-buttons'>
         <Button className='btn-secondary' onClick={() => Taro.navigateBack()}>取消</Button>
+        <Button className='btn-primary' onClick={() => Taro.navigateTo({ url: '/pages/preview/index' })}>下一步</Button>
       </View>
     </View>
   )
