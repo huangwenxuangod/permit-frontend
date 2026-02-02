@@ -10,13 +10,41 @@ export default function CameraGuidePage() {
   const specName = spec || '证件照'
 
   const handleChooseImage = () => {
-    // Navigate to detection
-    Taro.navigateTo({ url: '/pages/detection/index' })
+    Taro.chooseImage({
+      count: 1,
+      sourceType: ['album'],
+      sizeType: ['original', 'compressed']
+    }).then(res => {
+      const path = res.tempFilePaths?.[0] || (res.tempFiles && res.tempFiles[0]?.path)
+      if (!path) {
+        Taro.showToast({ title: '选择失败', icon: 'none' })
+        return
+      }
+      Taro.setStorageSync('selectedImagePath', path)
+      Taro.setStorageSync('selectedSpecName', specName)
+      Taro.navigateTo({ url: '/pages/detection/index' })
+    }).catch(() => {
+      Taro.showToast({ title: '未授权或已取消', icon: 'none' })
+    })
   }
 
   const handleTakePhoto = () => {
-    // Navigate to detection
-    Taro.navigateTo({ url: '/pages/detection/index' })
+    Taro.chooseImage({
+      count: 1,
+      sourceType: ['camera'],
+      sizeType: ['original', 'compressed']
+    }).then(res => {
+      const path = res.tempFilePaths?.[0] || (res.tempFiles && res.tempFiles[0]?.path)
+      if (!path) {
+        Taro.showToast({ title: '拍摄失败', icon: 'none' })
+        return
+      }
+      Taro.setStorageSync('selectedImagePath', path)
+      Taro.setStorageSync('selectedSpecName', specName)
+      Taro.navigateTo({ url: '/pages/detection/index' })
+    }).catch(() => {
+      Taro.showToast({ title: '未授权或已取消', icon: 'none' })
+    })
   }
 
   return (

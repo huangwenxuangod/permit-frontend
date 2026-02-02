@@ -9,10 +9,19 @@ export default function PayResultPage() {
   const isSuccess = status !== 'fail'
 
   const handleDownload = () => {
-    Taro.showToast({ title: '开始下载...', icon: 'loading' })
-    setTimeout(() => {
-      Taro.showToast({ title: '保存成功', icon: 'success' })
-    }, 1500)
+    const path = Taro.getStorageSync('selectedImagePath') as string
+    if (!path) {
+      Taro.showToast({ title: '无可下载图片', icon: 'none' })
+      return
+    }
+    Taro.authorize({ scope: 'scope.writePhotosAlbum' }).catch(() => {})
+    Taro.saveImageToPhotosAlbum({ filePath: path })
+      .then(() => {
+        Taro.showToast({ title: '保存成功', icon: 'success' })
+      })
+      .catch(() => {
+        Taro.showToast({ title: '保存失败，请检查权限', icon: 'none' })
+      })
   }
 
   const handleHome = () => {

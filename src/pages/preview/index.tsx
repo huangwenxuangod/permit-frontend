@@ -1,12 +1,18 @@
 import React from 'react'
-import { View, Text, Button } from '@tarojs/components'
-import { useState } from 'react'
+import { View, Text, Button, Image } from '@tarojs/components'
+import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
 
 export default function PreviewPage() {
   const [activeTab, setActiveTab] = useState('single')
   const [bgColor, setBgColor] = useState('blue')
+  const [imagePath, setImagePath] = useState<string>('')
+
+  useEffect(() => {
+    const p = Taro.getStorageSync('selectedImagePath')
+    if (p) setImagePath(p as string)
+  }, [])
 
   const handleNext = () => {
     Taro.navigateTo({ url: '/pages/order-confirm/index' })
@@ -31,7 +37,11 @@ export default function PreviewPage() {
 
       <View className='preview-container'>
         <View className={`preview-image bg-${bgColor}`}>
-          <Text className='preview-placeholder'>预览图（{bgColor === 'blue' ? '蓝底' : bgColor === 'white' ? '白底' : '红底'}）</Text>
+          {imagePath ? (
+            <Image src={imagePath} mode='aspectFit' style={{ width: '100%', height: '100%' }} />
+          ) : (
+            <Text className='preview-placeholder'>预览图（{bgColor === 'blue' ? '蓝底' : bgColor === 'white' ? '白底' : '红底'}）</Text>
+          )}
         </View>
       </View>
 
