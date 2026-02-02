@@ -1,5 +1,27 @@
 import Taro from '@tarojs/taro'
+
 const BASE_URL = 'http://localhost:5000/api'
+const BASE_ORIGIN = BASE_URL.replace(/\/api.*$/, '')
+
+const toAbsolute = (url?: string) => {
+  if (!url) return url as any
+  if (/^https?:\/\//.test(url)) return url
+  if (url.startsWith('/')) return `${BASE_ORIGIN}${url}`
+  return url
+}
+
+const normalizeTask = (data: any) => {
+  if (!data) return data
+  if (data.baselineUrl) data.baselineUrl = toAbsolute(data.baselineUrl)
+  if (data.processedUrls) {
+    const map = data.processedUrls
+    Object.keys(map || {}).forEach(k => {
+      map[k] = toAbsolute(map[k])
+    })
+    data.processedUrls = map
+  }
+  return data
+}
 
 export async function getSpecs() {
   const res = await Taro.request({ url: `${BASE_URL}/specs`, method: 'GET' })
@@ -29,14 +51,14 @@ export async function createTask(payload: { specCode: string, sourceObjectKey: s
   })
   const data = res.data as any
   if (data && data.error) throw new Error(data.error.message || 'Task error')
-  return data
+  return normalizeTask(data)
 }
 
 export async function getTask(id: string) {
   const res = await Taro.request({ url: `${BASE_URL}/tasks/${id}`, method: 'GET' })
   const data = res.data as any
   if (data && data.error) throw new Error(data.error.message || 'Get task error')
-  return data
+  return normalizeTask(data)
 }
 
 export async function generateBackground(id: string, color: string, dpi?: number, render?: number, kb?: number) {
@@ -48,7 +70,7 @@ export async function generateBackground(id: string, color: string, dpi?: number
   })
   const data = res.data as any
   if (data && data.error) throw new Error(data.error.message || 'Background error')
-  return data
+  return normalizeTask(data)
 }
 
 export async function generateLayout(id: string, color: string, widthPx: number, heightPx: number, dpi: number, kb?: number) {
@@ -60,7 +82,7 @@ export async function generateLayout(id: string, color: string, widthPx: number,
   })
   const data = res.data as any
   if (data && data.error) throw new Error(data.error.message || 'Layout error')
-  return data
+  return normalizeTask(data)
 }
 
 export async function getDownloadInfo(taskId: string) {
