@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
 import { icons } from '../../assets/icons'
+import { uploadImage, createTask, getTask } from '../../services/api'
 
 export default function DetectionPage() {
   const [progress, setProgress] = useState(0)
@@ -18,10 +19,48 @@ export default function DetectionPage() {
     const timer = setInterval(() => {
       setProgress(prev => (prev >= 100 ? 100 : prev + 2))
     }, 100)
-    setTimeout(() => updateItemStatus(0, 'success'), 1000)
-    setTimeout(() => updateItemStatus(1, 'success'), 2500)
-    setTimeout(() => updateItemStatus(2, 'success'), 3500)
-    setTimeout(() => updateItemStatus(3, 'processing'), 4000)
+    const run = async () => {
+      try {
+        const imagePath = Taro.getStorageSync('selectedImagePath') as string
+        if (!imagePath) {
+          Taro.showToast({ title: '请先选择图片', icon: 'none' })
+          return
+        }
+        updateItemStatus(0, 'processing')
+        const objectKey = await uploadImage(imagePath)
+        updateItemStatus(0, 'success')
+        updateItemStatus(1, 'processing')
+        const specCode = (Taro.getStorageSync('selectedSpecCode') as string) || 'default'
+        const widthPx = 295
+        const heightPx = 413
+        const dpi = 300
+        const task = await createTask({ specCode, sourceObjectKey: objectKey, widthPx, heightPx, dpi, defaultBackground: 'white' })
+        let taskId = task.id as string
+        let baselineUrl = task.baselineUrl as string
+        let processedUrls = task.processedUrls as Record<string, string> || {}
+        if (!baselineUrl || !processedUrls || task.status !== 'done') {
+          updateItemStatus(2, 'processing')
+          for (let i = 0; i < 20; i++) {
+            await new Promise(r => setTimeout(r, 1000))
+            const info = await getTask(taskId)
+            if (info.status === 'done') {
+              baselineUrl = info.baselineUrl
+              processedUrls = info.processedUrls || {}
+              break
+            }
+          }
+        }
+        updateItemStatus(2, 'success')
+        updateItemStatus(3, 'success')
+        Taro.setStorageSync('taskId', taskId)
+        if (baselineUrl) Taro.setStorageSync('baselineUrl', baselineUrl)
+        if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
+      } catch (e) {
+        Taro.showToast({ title: '处理失败', icon: 'none' })
+        updateItemStatus(3, 'pending')
+      }
+    }
+    run()
     return () => clearInterval(timer)
   }, [])
 

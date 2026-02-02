@@ -3,20 +3,25 @@ import { View, Text, Button, Image } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import './index.scss'
 import { icons } from '../../assets/icons'
+import { generateBackground, generateLayout, getDownloadInfo } from '../../services/api'
 
 export default function PayResultPage() {
   const router = useRouter()
   const { status } = router.params
   const isSuccess = status !== 'fail'
+  const [downloadUrl, setDownloadUrl] = React.useState<string>('')
 
   const handleDownload = () => {
-    const path = Taro.getStorageSync('selectedImagePath') as string
-    if (!path) {
+    const url = downloadUrl || (Taro.getStorageSync('processedUrls') as Record<string, string> || {})['white']
+    if (!url) {
       Taro.showToast({ title: '无可下载图片', icon: 'none' })
       return
     }
-    Taro.authorize({ scope: 'scope.writePhotosAlbum' }).catch(() => {})
-    Taro.saveImageToPhotosAlbum({ filePath: path })
+    Taro.downloadFile({ url })
+      .then(res => {
+        const path = res.tempFilePath
+        return Taro.saveImageToPhotosAlbum({ filePath: path })
+      })
       .then(() => {
         Taro.showToast({ title: '保存成功', icon: 'success' })
       })
@@ -32,6 +37,36 @@ export default function PayResultPage() {
   const handleViewOrder = () => {
     Taro.switchTab({ url: '/pages/orders/index' })
   }
+
+  React.useEffect(() => {
+    if (!isSuccess) return
+    const run = async () => {
+      try {
+        const taskId = Taro.getStorageSync('taskId') as string
+        const finalColor = (Taro.getStorageSync('finalColor') as string) || 'white'
+        const processed = (Taro.getStorageSync('processedUrls') as Record<string, string>) || {}
+        if (taskId) {
+          if (!processed[finalColor]) {
+            const bg = await generateBackground(taskId, finalColor, 300, 0, 200)
+            if (bg && bg.url) {
+              processed[finalColor] = bg.url
+              Taro.setStorageSync('processedUrls', processed)
+            }
+          }
+          const info = await getDownloadInfo(taskId).catch(() => null)
+          if (info && info.urls && info.urls[finalColor]) {
+            setDownloadUrl(info.urls[finalColor])
+          } else if (processed[finalColor]) {
+            setDownloadUrl(processed[finalColor])
+          }
+          const spec = { widthPx: 295, heightPx: 413, dpi: 300 }
+          await generateLayout(taskId, finalColor, spec.widthPx, spec.heightPx, spec.dpi, 200).catch(() => {})
+        }
+      } catch (e) {
+      }
+    }
+    run()
+  }, [isSuccess])
 
   return (
     <View className='pay-result-page'>

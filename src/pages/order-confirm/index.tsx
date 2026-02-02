@@ -3,6 +3,7 @@ import { View, Text, Button, Input, Picker } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
+import { createOrder } from '../../services/api'
 
 export default function OrderConfirmPage() {
   const [city, setCity] = useState('')
@@ -15,7 +16,19 @@ export default function OrderConfirmPage() {
   }
 
   const handlePay = () => {
-    // Navigate to pay result
+    const previewColor = (Taro.getStorageSync('previewColor') as string) || 'white'
+    Taro.setStorageSync('finalColor', previewColor)
+    const taskId = Taro.getStorageSync('taskId') as string
+    const amountCents = 2500
+    const items = [{ type: 'electronic', qty: 1 }, { type: 'layout', qty: 1 }]
+    const channel = 'wechat'
+    if (taskId) {
+      createOrder({ taskId, items, city: city || '广州', remark: remark || '', amountCents, channel })
+        .then(res => {
+          if (res && res.orderId) Taro.setStorageSync('orderId', res.orderId)
+        })
+        .catch(() => {})
+    }
     Taro.navigateTo({ url: '/pages/pay-result/index?status=success' })
   }
 
