@@ -2,7 +2,7 @@
   "miniprogramRoot": "./dist",
   "projectname": "permit-frontend",
   "description": "一照通",
-  "appid": "wx42fe8b53069f9f20",
+  "appid": "YOUR_APPID_HERE",
   "setting": {
     "urlCheck": true,
     "es6": false,
