@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import './index.scss'
+import { icons } from '../../assets/icons'
 
 export default function ProfilePage() {
   const menuItemsSafe = [
@@ -24,13 +25,13 @@ export default function ProfilePage() {
         {menuItemsSafe.map((item, index) => (
           <View key={index} className='menu-item'>
             <Text className='menu-name'>{item.name}</Text>
-            <Text className='menu-arrow'>&gt;</Text>
+            <Image src={icons.arrowDown} style={{ width: '16px', height: '16px' }} />
           </View>
         ))}
       </View>
 
       <View className='floating-cs'>
-        <Text>服</Text>
+        <Image src={icons.user} style={{ width: '20px', height: '20px' }} />
       </View>
     </View>
   )

@@ -24,15 +24,21 @@ export default defineAppConfig({
     list: [
       {
         pagePath: 'pages/index/index',
-        text: '首页'
+        text: '首页',
+        iconPath: 'assets/icons/首页.png',
+        selectedIconPath: 'assets/icons/首页.png'
       },
       {
         pagePath: 'pages/orders/index',
-        text: '订单'
+        text: '订单',
+        iconPath: 'assets/icons/订单.png',
+        selectedIconPath: 'assets/icons/订单.png'
       },
       {
         pagePath: 'pages/profile/index',
-        text: '我的'
+        text: '我的',
+        iconPath: 'assets/icons/我的.png',
+        selectedIconPath: 'assets/icons/我的.png'
       }
     ]
   }

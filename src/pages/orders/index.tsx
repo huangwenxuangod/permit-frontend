@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, ScrollView } from '@tarojs/components'
+import { View, Text, ScrollView, Image } from '@tarojs/components'
 import './index.scss'
+import { icons } from '../../assets/icons'
 
 export default function OrdersPage() {
   const orders = [
@@ -11,7 +12,8 @@ export default function OrdersPage() {
   return (
     <View className='orders-page'>
       <View className='warning-bar'>
-        <Text>⚠ 系统只保留近90天的订单，请在订单完成后及时保存</Text>
+        <Image src={icons.error} style={{ width: '14px', height: '14px', marginRight: '4px' }} />
+        <Text>系统只保留近90天的订单，请在订单完成后及时保存</Text>
       </View>
 
       <ScrollView scrollY className='order-list'>

@@ -48,6 +48,7 @@ export default defineConfig<'vite'>(async (merge) => {
     },
     copy: {
       patterns: [
+        { from: 'src/assets/icons', to: 'dist/assets/icons' }
       ],
       options: {
       }

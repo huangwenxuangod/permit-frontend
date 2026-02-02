@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, Button } from '@tarojs/components'
+import { View, Text, Button, Image } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
 import './index.scss'
+import { icons } from '../../assets/icons'
 
 export default function Index() {
   useLoad(() => {
@@ -16,6 +17,14 @@ export default function Index() {
     { name: '换底色', label: '色', color: 'pink' },
     { name: '改文件大小', label: '大', color: 'indigo' },
   ]
+  const serviceIconKeyMap: Record<string, keyof typeof icons> = {
+    '拍': 'camera',
+    '修': 'edit',
+    '回': 'orders',
+    '清': 'success',
+    '色': 'picture',
+    '大': 'editFile',
+  }
 
   const hotSpecs = [
     { name: '港澳通行证', size: '390x567px', tags: ['合回执', '电子照'] },
@@ -40,7 +49,7 @@ export default function Index() {
       {/* Header Section */}
       <View className='header-section'>
         <View className='brand-tag'>
-          <Text className='tag-icon'>✓</Text>
+          <Image src={icons.success} style={{ width: '14px', height: '14px' }} />
           <Text>官方/机构认可</Text>
         </View>
         <View className='hero-banner'>
@@ -58,7 +67,7 @@ export default function Index() {
           {services.map((item, index) => (
             <View key={index} className='service-item' onClick={handleMoreSpecs}>
               <View className={`service-icon bg-${item.color}-100`}>
-                <Text>{item.label}</Text>
+                <Image src={icons[serviceIconKeyMap[item.label]]} style={{ width: '24px', height: '24px' }} />
               </View>
               <Text className='service-name'>{item.name}</Text>
             </View>

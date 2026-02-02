@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, Button } from '@tarojs/components'
+import { View, Text, Button, Image } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import './index.scss'
+import { icons } from '../../assets/icons'
 
 export default function PayResultPage() {
   const router = useRouter()
@@ -36,7 +37,10 @@ export default function PayResultPage() {
     <View className='pay-result-page'>
       <View className='status-card'>
         <View className={`status-icon ${isSuccess ? 'success' : 'fail'}`}>
-          {isSuccess ? '✓' : '✕'}
+          <Image
+            src={isSuccess ? icons.success : icons.error}
+            style={{ width: '40px', height: '40px' }}
+          />
         </View>
         <Text className='status-text'>{isSuccess ? '支付成功' : '支付失败'}</Text>
         {isSuccess && <Text className='order-no'>订单号：#2026-000001</Text>}

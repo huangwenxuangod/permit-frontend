@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, Input, ScrollView } from '@tarojs/components'
+import { View, Text, Input, ScrollView, Image } from '@tarojs/components'
 import { useState } from 'react'
 import './index.scss'
+import { icons } from '../../assets/icons'
 
 // Specs Search Page
 export default function SpecsPage() {
@@ -40,7 +41,7 @@ export default function SpecsPage() {
       {/* Search Bar */}
       <View className='search-bar-container'>
         <View className='search-input-wrapper'>
-          <Text className='search-icon'>🔍</Text>
+          <Image src={icons.picture} style={{ width: '16px', height: '16px' }} />
           <Input 
             className='search-input' 
             placeholder='请输入规格关键词...' 

@@ -1,8 +1,9 @@
 import React from 'react'
-import { View, Text, Button } from '@tarojs/components'
+import { View, Text, Button, Image } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
+import { icons } from '../../assets/icons'
 
 export default function DetectionPage() {
   const [progress, setProgress] = useState(0)
@@ -43,9 +44,18 @@ export default function DetectionPage() {
       <View className='checklist'>
         {items.map((item, index) => (
           <View key={index} className='check-item'>
-            <Text className={`check-icon ${item.status}`}>
-              {item.status === 'success' ? '✓' : item.status === 'processing' ? '⟳' : '○'}
-            </Text>
+            <View className={`check-icon ${item.status}`}>
+              <Image
+                src={
+                  item.status === 'success'
+                    ? icons.success
+                    : item.status === 'processing'
+                    ? icons.loading
+                    : icons.history
+                }
+                style={{ width: '16px', height: '16px' }}
+              />
+            </View>
             <Text className='check-text'>{item.text}</Text>
           </View>
         ))}
