@@ -8,7 +8,7 @@ export default function CameraGuidePage() {
   const router = useRouter()
   const { spec } = router.params
   const specName = spec || '证件照'
-  Taro.setStorageSync('selectedSpecCode', specName)
+  Taro.setStorageSync('selectedSpecCode', spec || '')
 
   const handleChooseImage = () => {
     Taro.chooseImage({

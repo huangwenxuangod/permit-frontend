@@ -1,39 +1,59 @@
 import React from 'react'
 import { View, Text, Input, ScrollView, Image } from '@tarojs/components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Taro from '@tarojs/taro'
 import './index.scss'
 import { icons } from '../../assets/icons'
+import { getSpecs } from '../../services/api'
 
 // Specs Search Page
 export default function SpecsPage() {
   const [activeTab, setActiveTab] = useState('全部')
   const [searchQuery, setSearchQuery] = useState('')
+  const [remoteSpecs, setRemoteSpecs] = useState<Array<{ code: string, name: string, widthPx: number, heightPx: number, dpi: number }>>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    getSpecs()
+      .then((list) => {
+        if (Array.isArray(list)) {
+          setRemoteSpecs(list as any)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
   const tabs = ['全部', '寸照', '回执', '签证', '考试']
 
-  const specs = [
-    { name: '居住证', size: '358x441px', category: '回执', tags: ['合回执', '电子照'] },
-    { name: '社保证', size: '358x441px', category: '回执', tags: ['合回执', '电子照'] },
-    { name: '一寸', size: '295x413px', category: '寸照', tags: ['电子照'] },
-    { name: '二寸', size: '413x579px', category: '寸照', tags: ['电子照'] },
-    { name: '小二寸', size: '413x531px', category: '寸照', tags: ['电子照'] },
-    { name: '大一寸', size: '390x567px', category: '寸照', tags: ['电子照'] },
-    { name: '小一寸', size: '260x378px', category: '寸照', tags: ['电子照'] },
-    { name: '驾驶证', size: '260x378px', category: '考试', tags: ['电子照'] },
-    { name: '美国签证', size: '600x600px', category: '签证', tags: ['电子照'] },
-    { name: '教师资格', size: '295x413px', category: '考试', tags: ['电子照'] },
-  ]
+  const specs = (remoteSpecs.length > 0 ? remoteSpecs.map(s => ({
+    code: s.code,
+    name: s.name,
+    size: `${s.widthPx}x${s.heightPx}px`,
+    tags: ['电子照']
+  })) : [
+    { code: 'residence', name: '居住证', size: '358x441px', tags: ['电子照'] },
+    { code: 'social', name: '社保证', size: '358x441px', tags: ['电子照'] },
+    { code: '1inch', name: '一寸', size: '295x413px', tags: ['电子照'] },
+    { code: '2inch', name: '二寸', size: '413x579px', tags: ['电子照'] },
+    { code: 'small-2inch', name: '小二寸', size: '413x531px', tags: ['电子照'] },
+    { code: 'large-1inch', name: '大一寸', size: '390x567px', tags: ['电子照'] },
+    { code: 'small-1inch', name: '小一寸', size: '260x378px', tags: ['电子照'] },
+    { code: 'driver', name: '驾驶证', size: '260x378px', tags: ['电子照'] },
+    { code: 'us-visa', name: '美国签证', size: '600x600px', tags: ['电子照'] },
+    { code: 'teacher', name: '教师资格', size: '295x413px', tags: ['电子照'] },
+  ])
 
   const filteredSpecs = specs.filter(spec => {
-    const matchesTab = activeTab === '全部' || spec.category === activeTab || (activeTab === '回执' && spec.tags.includes('合回执'))
     const matchesSearch = spec.name.includes(searchQuery)
-    return matchesTab && matchesSearch
+    return matchesSearch
   })
 
   const handleSpecClick = (spec) => {
-    // Navigate to camera guide
-    console.log('Navigate to camera guide for', spec.name)
-    // Taro.navigateTo({ url: `/pages/camera/index?spec=${spec.name}` })
+    const code = (spec.code || spec.name)
+    Taro.setStorageSync('selectedSpecCode', code)
+    Taro.navigateTo({ url: `/pages/camera-guide/index?spec=${code}` })
   }
 
   return (
@@ -67,20 +87,24 @@ export default function SpecsPage() {
 
       {/* Specs Grid */}
       <View className='specs-grid'>
-        {filteredSpecs.map((spec, index) => (
-          <View key={index} className='spec-card' onClick={() => handleSpecClick(spec)}>
-            <View className='spec-preview'></View>
-            <Text className='spec-name'>{spec.name}</Text>
-            <Text className='spec-size'>{spec.size}</Text>
-            <View className='spec-tags'>
-              {spec.tags.map((tag, tIndex) => (
-                <Text key={tIndex} className={`tag ${tag === '合回执' ? 'tag-primary' : 'tag-success'}`}>
-                  {tag}
-                </Text>
-              ))}
+        {loading ? (
+          <Text className='loading-tip'>加载中...</Text>
+        ) : (
+          filteredSpecs.map((spec, index) => (
+            <View key={index} className='spec-card' onClick={() => handleSpecClick(spec)}>
+              <View className='spec-preview'></View>
+              <Text className='spec-name'>{spec.name}</Text>
+              <Text className='spec-size'>{spec.size}</Text>
+              <View className='spec-tags'>
+                {spec.tags.map((tag, tIndex) => (
+                  <Text key={tIndex} className={`tag ${tag === '合回执' ? 'tag-primary' : 'tag-success'}`}>
+                    {tag}
+                  </Text>
+                ))}
+              </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </View>
     </View>
   )

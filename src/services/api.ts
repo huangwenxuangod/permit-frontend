@@ -1,6 +1,5 @@
 import Taro from '@tarojs/taro'
-
-const BASE_URL = (process.env as any).API_BASE_URL || 'http://localhost:8080/api'
+const BASE_URL = 'http://localhost:5000/api'
 
 export async function getSpecs() {
   const res = await Taro.request({ url: `${BASE_URL}/specs`, method: 'GET' })

@@ -14,7 +14,7 @@ import arrowLeft from './箭头左.png'
 import arrowDown from './下.png'
 import settings from './设置.png'
 import share from './分享.png'
-import history from './历史记录.png'
+import historyIcon from './历史记录.png'
 import creditCard from './信用卡.png'
 
 export const icons = {
@@ -34,6 +34,6 @@ export const icons = {
   arrowDown,
   settings,
   share,
-  history,
+  history: historyIcon,
   creditCard,
 }
