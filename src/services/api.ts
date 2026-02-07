@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
 
-const BASE_URL = 'http://localhost:5000/api'
+const BASE_URL = 'http://47.107.40.219:5000/api'
 const BASE_ORIGIN = BASE_URL.replace(/\/api.*$/, '')
 
 const toAbsolute = (url?: string) => {
@@ -29,6 +29,32 @@ export async function getSpecs() {
   if (data && data.error) throw new Error(data.error.message || 'Specs error')
   return data
 }
+
+export async function login(code: string) {
+  const env = process.env.TARO_ENV || ''
+  const provider = env || 'weapp'
+  try {
+    console.log('api.login payload:', { code, provider })
+  } catch {}
+  const res = await Taro.request({
+    url: `${BASE_URL}/login`,
+    method: 'POST',
+    data: { code, provider },
+    header: { 'Content-Type': 'application/json' }
+  })
+  const data = res.data as any
+  if (data && data.error) throw new Error(data.error.message || 'Login error')
+  return data
+}
+
+export async function me() {
+  const res = await Taro.request({ url: `${BASE_URL}/me`, method: 'GET' })
+  const data = res.data as any
+  if (data && data.error) throw new Error(data.error.message || 'Me error')
+  return data
+}
+
+// 已取消绑定手机号能力：不再导出 bindPhoneNumber
 
 export async function uploadImage(filePath: string) {
   const res = await Taro.uploadFile({

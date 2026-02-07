@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, Button, Image } from '@tarojs/components'
-import { useState, useEffect } from 'react'
-import Taro from '@tarojs/taro'
+import { useState, useEffect, useRef } from 'react'
+import Taro, { useDidHide, useUnload } from '@tarojs/taro'
 import './index.scss'
 import { icons } from '../../assets/icons'
 import { uploadImage, createTask, getTask } from '../../services/api'
@@ -14,10 +14,12 @@ export default function DetectionPage() {
     { text: '表情与着装符合证件要求', status: 'pending' },
     { text: '优化照片画质', status: 'pending' },
   ])
+  const canceledRef = useRef(false)
+  const timerRef = useRef<any>(null)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress(prev => (prev >= 100 ? 100 : prev + 2))
+    timerRef.current = setInterval(() => {
+      setProgress(prev => (canceledRef.current ? prev : (prev >= 100 ? 100 : prev + 2)))
     }, 100)
     const run = async () => {
       try {
@@ -26,8 +28,10 @@ export default function DetectionPage() {
           Taro.showToast({ title: '请先选择图片', icon: 'none' })
           return
         }
+        if (canceledRef.current) return
         updateItemStatus(0, 'processing')
         const objectKey = await uploadImage(imagePath)
+        if (canceledRef.current) return
         updateItemStatus(0, 'success')
         updateItemStatus(1, 'processing')
         const specCode = (Taro.getStorageSync('selectedSpecCode') as string) || 'default'
@@ -42,6 +46,7 @@ export default function DetectionPage() {
           updateItemStatus(2, 'processing')
           for (let i = 0; i < 20; i++) {
             await new Promise(r => setTimeout(r, 1000))
+            if (canceledRef.current) break
             const info = await getTask(taskId)
             if (info.status === 'done') {
               baselineUrl = info.baselineUrl
@@ -50,19 +55,42 @@ export default function DetectionPage() {
             }
           }
         }
-        updateItemStatus(2, 'success')
-        updateItemStatus(3, 'success')
-        Taro.setStorageSync('taskId', taskId)
-        if (baselineUrl) Taro.setStorageSync('baselineUrl', baselineUrl)
-        if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
+        if (!canceledRef.current) {
+          updateItemStatus(2, 'success')
+          updateItemStatus(3, 'success')
+          Taro.setStorageSync('taskId', taskId)
+          if (baselineUrl) Taro.setStorageSync('baselineUrl', baselineUrl)
+          if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
+        }
       } catch (e) {
         Taro.showToast({ title: '处理失败', icon: 'none' })
         updateItemStatus(3, 'pending')
       }
     }
     run()
-    return () => clearInterval(timer)
+    return () => {
+      canceledRef.current = true
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
   }, [])
+
+  useDidHide(() => {
+    canceledRef.current = true
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  })
+  useUnload(() => {
+    canceledRef.current = true
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  })
 
   const updateItemStatus = (index, status) => {
     setItems(prev => {

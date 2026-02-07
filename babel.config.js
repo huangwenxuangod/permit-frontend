@@ -7,5 +7,14 @@ module.exports = {
       ts: true,
       compiler: 'vite',
     }]
+  ],
+  plugins: [],
+  overrides: [
+    {
+      test: /\.(t|j)sx?$/,
+      presets: [
+        ['@babel/preset-react', { runtime: 'classic' }]
+      ]
+    }
   ]
 }
