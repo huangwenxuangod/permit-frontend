@@ -13,6 +13,7 @@
 .status-text {
   font-size: 16px;
   color: $text-main;
+  font-weight: 600;
   margin-bottom: $spacing-md;
 }
 
@@ -55,6 +56,16 @@
       &.pending { color: $text-light; }
     }
     
+    .check-icon.processing + .check-text {
+      color: $primary;
+      font-weight: 600;
+    }
+    
+    .check-icon.success + .check-text {
+      color: $success;
+      font-weight: 600;
+    }
+    
     .check-text {
       font-size: 14px;
       color: $text-main;
@@ -73,6 +84,12 @@
     font-size: 16px;
     border-radius: $radius-full;
     margin: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    
+    &:active {
+      opacity: 0.8;
+      transform: scale(0.98);
+    }
     
     &::after { border: none; }
   }

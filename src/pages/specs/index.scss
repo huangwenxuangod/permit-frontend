@@ -49,6 +49,8 @@
   white-space: nowrap;
   margin-top: $spacing-md;
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   
   .tab-item {
     display: inline-block;
@@ -60,6 +62,10 @@
     margin-right: $spacing-sm;
     border: 1px solid transparent;
     transition: all 0.2s;
+    
+    &:active {
+      opacity: 0.7;
+    }
     
     &.active {
       background-color: rgba(59, 130, 246, 0.1); /* primary-100 */
@@ -93,10 +99,11 @@
   box-shadow: $shadow-sm;
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   
   &:active {
     transform: scale(0.98);
+    box-shadow: $shadow-md;
   }
   
   .spec-preview {

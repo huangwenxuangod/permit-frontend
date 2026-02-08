@@ -62,11 +62,17 @@
       flex: 1;
       font-size: 14px;
       border-radius: $radius-full;
+      transition: opacity 0.2s, transform 0.2s;
+      
+      &:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+      }
       
       &::after { border: none; }
     }
     
-    .btn-primary { background-color: $primary; color: white; }
+    .btn-primary { background-color: $primary; color: white; box-shadow: $shadow-sm; }
     .btn-secondary { background-color: white; color: $primary; border: 1px solid $primary; }
   }
   
@@ -89,6 +95,12 @@
     border: 1px solid $border-color;
     border-radius: $radius-full;
     background-color: white;
+    transition: opacity 0.2s, transform 0.2s;
+    
+    &:active {
+      opacity: 0.8;
+      transform: scale(0.98);
+    }
     
     &::after { border: none; }
   }

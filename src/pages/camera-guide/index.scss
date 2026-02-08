@@ -24,7 +24,7 @@
   .spec-tag {
     font-size: 12px;
     color: $primary;
-    background-color: rgba(59, 130, 246, 0.1);
+    background-color: rgba($primary, 0.1);
     padding: 2px 6px;
     border-radius: 4px;
   }
@@ -62,9 +62,12 @@
   
   .illustration-area {
     width: 100%;
-    height: 480px;
+    height: 60vw;
+    max-height: 480px;
+    min-height: 240px;
     border-radius: $radius-md;
     margin-top: $spacing-md;
+    overflow: hidden;
     
     .illustration-image {
       width: 100%;
@@ -97,6 +100,12 @@
     font-size: 16px;
     border-radius: $radius-full;
     margin: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    
+    &:active {
+      opacity: 0.8;
+      transform: scale(0.98);
+    }
     
     &::after { border: none; }
   }

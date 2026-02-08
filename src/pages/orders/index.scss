@@ -7,8 +7,8 @@
 }
 
 .warning-bar {
-  background-color: #FFFBEB; /* Yellow-50 */
-  color: #B45309; /* Yellow-700 */
+  background-color: rgba($warning, 0.12);
+  color: $warning;
   padding: $spacing-sm $spacing-md;
   font-size: 12px;
   display: flex;
@@ -24,14 +24,14 @@
   border-radius: $radius-lg;
   padding: $spacing-md;
   margin: 0 $spacing-md $spacing-md;
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
-  box-shadow: $shadow-sm;
-  
   .order-thumb {
     width: 60px;
     height: 80px;
     background-color: $bg-input;
     border-radius: $radius-sm;
+    border: 1px solid $border-color;
     margin-right: $spacing-md;
     flex-shrink: 0;
   }
@@ -56,7 +56,7 @@
       .order-tag {
         font-size: 10px;
         color: $primary;
-        background-color: rgba(59, 130, 246, 0.1);
+        background-color: rgba($primary, 0.1);
         padding: 2px 4px;
         border-radius: 4px;
       }
@@ -81,7 +81,7 @@
       .order-status {
         font-size: 14px;
         
-        &.completed { color: $text-light; }
+        &.completed { color: $success; }
         &.pending { color: $danger; }
       }
     }

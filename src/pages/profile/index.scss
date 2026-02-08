@@ -52,8 +52,14 @@
     align-items: center;
     padding: $spacing-md;
     border-bottom: 1px solid $bg-body;
+    transition: background-color 0.2s, opacity 0.2s;
     
     &:last-child { border-bottom: none; }
+    
+    &:active {
+      background-color: $bg-input;
+      opacity: 0.85;
+    }
     
     .menu-name {
       font-size: 16px;
@@ -81,4 +87,11 @@
   border: 1px solid $border-color;
   font-size: 16px;
   z-index: 100;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  
+  &:active {
+    transform: scale(0.96);
+    box-shadow: $shadow-sm;
+    opacity: 0.85;
+  }
 }
