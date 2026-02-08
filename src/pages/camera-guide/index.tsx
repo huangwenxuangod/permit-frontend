@@ -71,7 +71,7 @@ export default function CameraGuidePage() {
         </View>
 
         <View className='illustration-area'>
-          <Image className='illustration-image' src={images.guideIllustration} mode='aspectFit' />
+          <Image className='illustration-image' src={images.guideIllustration} mode='aspectFill' />
         </View>
       </View>
 
