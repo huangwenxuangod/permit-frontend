@@ -7,9 +7,10 @@ import { generateBackground, generateLayout, getDownloadInfo } from '../../servi
 
 export default function PayResultPage() {
   const router = useRouter()
-  const { status } = router.params
+  const { status, orderId: orderIdFromQuery } = router.params
   const isSuccess = status !== 'fail'
   const [downloadUrl, setDownloadUrl] = React.useState<string>('')
+  const orderId = (orderIdFromQuery as string) || (Taro.getStorageSync('orderId') as string) || ''
 
   const handleDownload = () => {
     const url = downloadUrl || (Taro.getStorageSync('processedUrls') as Record<string, string> || {})['white']
@@ -78,7 +79,7 @@ export default function PayResultPage() {
           />
         </View>
         <Text className='status-text'>{isSuccess ? '支付成功' : '支付失败'}</Text>
-        {isSuccess && <Text className='order-no'>订单号：#2026-000001</Text>}
+        {isSuccess && orderId && <Text className='order-no'>订单号：#{orderId}</Text>}
       </View>
 
       {isSuccess && (

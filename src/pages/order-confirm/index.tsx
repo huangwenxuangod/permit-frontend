@@ -3,11 +3,12 @@ import { View, Text, Button, Input, Picker } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { createOrder } from '../../services/api'
+import { createOrder, payWechat } from '../../services/api'
 
 export default function OrderConfirmPage() {
   const [city, setCity] = useState('')
   const [remark, setRemark] = useState('')
+  const [paying, setPaying] = useState(false)
   
   const cities = ['广州', '深圳', '珠海', '佛山', '东莞', '中山']
 
@@ -15,21 +16,58 @@ export default function OrderConfirmPage() {
     setCity(cities[e.detail.value])
   }
 
-  const handlePay = () => {
+  const handlePay = async () => {
+    if (paying) return
+    if (!city) {
+      Taro.showToast({ title: '请选择办理城市', icon: 'none' })
+      return
+    }
     const previewColor = (Taro.getStorageSync('previewColor') as string) || 'white'
     Taro.setStorageSync('finalColor', previewColor)
     const taskId = Taro.getStorageSync('taskId') as string
     const amountCents = 2500
     const items = [{ type: 'electronic', qty: 1 }, { type: 'layout', qty: 1 }]
     const channel = 'wechat'
-    if (taskId) {
-      createOrder({ taskId, items, city: city || '广州', remark: remark || '', amountCents, channel })
-        .then(res => {
-          if (res && res.orderId) Taro.setStorageSync('orderId', res.orderId)
-        })
-        .catch(() => {})
+    if (!taskId) {
+      Taro.showToast({ title: '任务不存在', icon: 'none' })
+      return
     }
-    Taro.navigateTo({ url: '/pages/pay-result/index?status=success' })
+    try {
+      setPaying(true)
+      Taro.showLoading({ title: '支付中...' })
+      const orderRes = await createOrder({ taskId, items, city, remark: remark || '', amountCents, channel })
+      const orderId = orderRes?.orderId
+      if (!orderId) {
+        Taro.showToast({ title: '订单创建失败', icon: 'none' })
+        return
+      }
+      Taro.setStorageSync('orderId', orderId)
+      const payRes = await payWechat(orderId)
+      const payParams = payRes?.payParams || {}
+      if (payParams.type === 'mock') {
+        Taro.navigateTo({ url: `/pages/pay-result/index?status=success&orderId=${orderId}` })
+        return
+      }
+      const payPackage = payParams.package || payParams.prepay_id || payParams.prepayId
+      if (!payPackage) {
+        Taro.showToast({ title: '支付参数缺失', icon: 'none' })
+        Taro.navigateTo({ url: `/pages/pay-result/index?status=fail&orderId=${orderId}` })
+        return
+      }
+      await Taro.requestPayment({
+        timeStamp: String(payParams.timeStamp || ''),
+        nonceStr: payParams.nonceStr,
+        package: payPackage,
+        signType: payParams.signType,
+        paySign: payParams.paySign
+      })
+      Taro.navigateTo({ url: `/pages/pay-result/index?status=success&orderId=${orderId}` })
+    } catch {
+      Taro.navigateTo({ url: '/pages/pay-result/index?status=fail' })
+    } finally {
+      Taro.hideLoading()
+      setPaying(false)
+    }
   }
 
   return (
@@ -100,7 +138,7 @@ export default function OrderConfirmPage() {
           <Text>合计：</Text>
           <Text className='price'>￥25.00</Text>
         </View>
-        <Button className='btn-primary' onClick={handlePay}>立即支付</Button>
+        <Button className='btn-primary' loading={paying} disabled={paying} onClick={handlePay}>立即支付</Button>
       </View>
     </View>
   )

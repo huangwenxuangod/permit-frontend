@@ -23,6 +23,8 @@ const normalizeTask = (data: any) => {
   return data
 }
 
+const createIdempotencyKey = () => `mini-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+
 export async function getSpecs() {
   const res = await Taro.request({ url: `${BASE_URL}/specs`, method: 'GET' })
   const data = res.data as any
@@ -127,5 +129,29 @@ export async function createOrder(payload: { taskId: string, items: any[], city:
   })
   const data = res.data as any
   if (data && data.error) throw new Error(data.error.message || 'Order error')
+  return data
+}
+
+export async function payWechat(orderId: string) {
+  const res = await Taro.request({
+    url: `${BASE_URL}/pay/wechat`,
+    method: 'POST',
+    data: { orderId },
+    header: { 'Content-Type': 'application/json', 'Idempotency-Key': createIdempotencyKey() }
+  })
+  const data = res.data as any
+  if (data && data.error) throw new Error(data.error.message || 'Pay wechat error')
+  return data
+}
+
+export async function payDouyin(orderId: string) {
+  const res = await Taro.request({
+    url: `${BASE_URL}/pay/douyin`,
+    method: 'POST',
+    data: { orderId },
+    header: { 'Content-Type': 'application/json', 'Idempotency-Key': createIdempotencyKey() }
+  })
+  const data = res.data as any
+  if (data && data.error) throw new Error(data.error.message || 'Pay douyin error')
   return data
 }
