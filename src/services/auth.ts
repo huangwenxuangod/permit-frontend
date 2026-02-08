@@ -112,11 +112,13 @@ export function initAuthInterceptors(): void {
     { path: '/api/upload', method: 'POST' },
     { path: '/api/login', method: 'POST' }
   ]
+  const createRequestId = () => `req-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 
   Taro.addInterceptor(chain => {
     const req: any = chain.requestParams || {}
     const url: string = req.url || ''
     const method: string = (req.method || 'GET').toUpperCase()
+    const startTime = Date.now()
     let pathname = ''
     try {
       pathname = new URL(url).pathname
@@ -128,6 +130,8 @@ export function initAuthInterceptors(): void {
       pathname.startsWith('/assets')
 
     const headers = Object.assign({}, req.header || {})
+    const requestId = headers['X-Request-Id'] || headers['x-request-id'] || createRequestId()
+    headers['X-Request-Id'] = requestId
     if (!isWhite) {
       const t = getToken()
       if (t) headers['Authorization'] = `Bearer ${t}`
@@ -135,6 +139,11 @@ export function initAuthInterceptors(): void {
     const nextReq = Object.assign({}, req, { header: headers })
     return chain.proceed(nextReq).then(async (res: any) => {
       const status = res.statusCode || res.status || 0
+      const responseId = res?.header?.['X-Request-Id'] || res?.header?.['x-request-id'] || requestId
+      const durationMs = Date.now() - startTime
+      try {
+        console.log('request trace:', { time: new Date().toISOString(), method, pathname, status, durationMs, requestId: responseId })
+      } catch {}
       if (status === 401) {
         clearToken()
         clearUser()

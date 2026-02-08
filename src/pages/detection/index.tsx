@@ -19,7 +19,7 @@ export default function DetectionPage() {
   const handleFailure = (message: string, error?: unknown) => {
     if (canceledRef.current) return
     if (error) {
-      console.log('detection failure:', message, error)
+      console.log('failure:', message, error)
     }
     Taro.showToast({ title: message, icon: 'none' })
     updateItemStatus(3, 'pending')
@@ -53,7 +53,7 @@ export default function DetectionPage() {
         const dpi = 300
         const task = await createTask({ specCode, sourceObjectKey: objectKey, widthPx, heightPx, dpi, defaultBackground: 'white' })
         if (!task || task.status === 'failed') {
-          handleFailure('生成失败，请重新选择照片', { task, phase: 'createTask' })
+          handleFailure('生成失败，请重新选择照片', { task, phase: 'createTask', errorMsg: task?.errorMsg })
           return
         }
         let taskId = task.id as string
@@ -66,7 +66,7 @@ export default function DetectionPage() {
             if (canceledRef.current) break
             const info = await getTask(taskId)
             if (info.status === 'failed') {
-              handleFailure('生成失败，请重新选择照片', { info, phase: 'getTask' })
+              handleFailure('生成失败，请重新选择照片', { info, phase: 'getTask', errorMsg: info?.errorMsg })
               return
             }
             if (info.status === 'done') {
