@@ -16,8 +16,11 @@ export default function DetectionPage() {
   ])
   const canceledRef = useRef(false)
   const timerRef = useRef<any>(null)
-  const handleFailure = (message: string) => {
+  const handleFailure = (message: string, error?: unknown) => {
     if (canceledRef.current) return
+    if (error) {
+      console.log('detection failure:', message, error)
+    }
     Taro.showToast({ title: message, icon: 'none' })
     updateItemStatus(3, 'pending')
     setTimeout(() => {
@@ -50,7 +53,7 @@ export default function DetectionPage() {
         const dpi = 300
         const task = await createTask({ specCode, sourceObjectKey: objectKey, widthPx, heightPx, dpi, defaultBackground: 'white' })
         if (!task || task.status === 'failed') {
-          handleFailure('生成失败，请重新选择照片')
+          handleFailure('生成失败，请重新选择照片', { task, phase: 'createTask' })
           return
         }
         let taskId = task.id as string
@@ -63,7 +66,7 @@ export default function DetectionPage() {
             if (canceledRef.current) break
             const info = await getTask(taskId)
             if (info.status === 'failed') {
-              handleFailure('生成失败，请重新选择照片')
+              handleFailure('生成失败，请重新选择照片', { info, phase: 'getTask' })
               return
             }
             if (info.status === 'done') {
@@ -74,7 +77,7 @@ export default function DetectionPage() {
           }
         }
         if (!baselineUrl || !processedUrls || Object.keys(processedUrls || {}).length === 0) {
-          handleFailure('生成失败，请重新选择照片')
+          handleFailure('生成失败，请重新选择照片', { baselineUrl, processedUrls, phase: 'validateResult' })
           return
         }
         if (!canceledRef.current) {
@@ -85,7 +88,7 @@ export default function DetectionPage() {
           if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
         }
       } catch (e) {
-        handleFailure('处理失败，请重新选择照片')
+        handleFailure('处理失败，请重新选择照片', e)
       }
     }
     run()
