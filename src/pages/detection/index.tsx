@@ -16,6 +16,16 @@ export default function DetectionPage() {
   ])
   const canceledRef = useRef(false)
   const timerRef = useRef<any>(null)
+  const handleFailure = (message: string) => {
+    if (canceledRef.current) return
+    Taro.showToast({ title: message, icon: 'none' })
+    updateItemStatus(3, 'pending')
+    setTimeout(() => {
+      if (!canceledRef.current) {
+        Taro.navigateBack()
+      }
+    }, 800)
+  }
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -39,6 +49,10 @@ export default function DetectionPage() {
         const heightPx = 413
         const dpi = 300
         const task = await createTask({ specCode, sourceObjectKey: objectKey, widthPx, heightPx, dpi, defaultBackground: 'white' })
+        if (!task || task.status === 'failed') {
+          handleFailure('生成失败，请重新选择照片')
+          return
+        }
         let taskId = task.id as string
         let baselineUrl = task.baselineUrl as string
         let processedUrls = task.processedUrls as Record<string, string> || {}
@@ -48,12 +62,20 @@ export default function DetectionPage() {
             await new Promise(r => setTimeout(r, 1000))
             if (canceledRef.current) break
             const info = await getTask(taskId)
+            if (info.status === 'failed') {
+              handleFailure('生成失败，请重新选择照片')
+              return
+            }
             if (info.status === 'done') {
               baselineUrl = info.baselineUrl
               processedUrls = info.processedUrls || {}
               break
             }
           }
+        }
+        if (!baselineUrl || !processedUrls || Object.keys(processedUrls || {}).length === 0) {
+          handleFailure('生成失败，请重新选择照片')
+          return
         }
         if (!canceledRef.current) {
           updateItemStatus(2, 'success')
@@ -63,8 +85,7 @@ export default function DetectionPage() {
           if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
         }
       } catch (e) {
-        Taro.showToast({ title: '处理失败', icon: 'none' })
-        updateItemStatus(3, 'pending')
+        handleFailure('处理失败，请重新选择照片')
       }
     }
     run()
