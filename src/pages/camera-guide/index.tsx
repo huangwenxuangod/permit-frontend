@@ -1,8 +1,9 @@
 import React from 'react'
-import { View, Text, Button } from '@tarojs/components'
+import { View, Text, Button, Image } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import './index.scss'
+import { images } from '../../assets/images'
 
 export default function CameraGuidePage() {
   const router = useRouter()
@@ -70,7 +71,7 @@ export default function CameraGuidePage() {
         </View>
 
         <View className='illustration-area'>
-          <Text className='illustration-placeholder'>示意图区域：三点说明配图</Text>
+          <Image className='illustration-image' src={images.guideIllustration} mode='aspectFit' />
         </View>
       </View>
 
