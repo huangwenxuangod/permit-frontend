@@ -31,7 +31,7 @@ export default function ProfilePage() {
       </View>
 
       <View className='floating-cs'>
-        <Image src={icons.user} style={{ width: '20px', height: '20px' }} />
+        <Image src={icons.customerService} style={{ width: '20px', height: '20px' }} />
       </View>
     </View>
   )

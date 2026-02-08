@@ -106,7 +106,7 @@ export default function Index() {
       
       {/* Floating CS Button */}
       <View className='floating-cs'>
-        <Text>服</Text>
+        <Image src={icons.customerService} style={{ width: '24px', height: '24px' }} />
       </View>
     </View>
   )

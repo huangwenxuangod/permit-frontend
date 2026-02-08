@@ -16,6 +16,7 @@ import settings from './设置.png'
 import share from './分享.png'
 import historyIcon from './历史记录.png'
 import creditCard from './信用卡.png'
+import customerService from './客服.png'
 
 export const icons = {
   home,
@@ -36,4 +37,5 @@ export const icons = {
   share,
   history: historyIcon,
   creditCard,
+  customerService,
 }
