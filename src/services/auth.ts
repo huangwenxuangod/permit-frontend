@@ -108,7 +108,8 @@ export async function bootstrapAuth(): Promise<void> {
 
 export function initAuthInterceptors(): void {
   const whitelist = [
-    { path: '/api/login', method: 'POST' }
+    { path: '/api/login', method: 'POST' },
+    { path: '/api/download/file', method: 'GET' }
   ]
   const createRequestId = () => `req-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 

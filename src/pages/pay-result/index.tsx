@@ -3,7 +3,7 @@ import { View, Text, Button, Image } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import './index.scss'
 import { icons } from '../../assets/icons'
-import { generateBackground, generateLayout, getDownloadInfo } from '../../services/api'
+import { generateBackground, generateLayout, getDownloadInfo, createDownloadToken, getDownloadFileUrl } from '../../services/api'
 
 export default function PayResultPage() {
   const router = useRouter()
@@ -14,23 +14,43 @@ export default function PayResultPage() {
   const [layoutUrl, setLayoutUrl] = React.useState<string>('')
   const orderId = (orderIdFromQuery as string) || (Taro.getStorageSync('orderId') as string) || ''
 
-  const handleDownload = () => {
-    const url = downloadUrl || (Taro.getStorageSync('processedUrls') as Record<string, string> || {})['white']
-    if (!url) {
-      Taro.showToast({ title: '无可下载图片', icon: 'none' })
+  const handleDownload = async () => {
+    const taskId = Taro.getStorageSync('taskId') as string
+    if (!taskId) {
+      Taro.showToast({ title: '任务不存在', icon: 'none' })
       return
     }
-    Taro.downloadFile({ url })
-      .then(res => {
-        const path = res.tempFilePath
-        return Taro.saveImageToPhotosAlbum({ filePath: path })
-      })
-      .then(() => {
+    try {
+      Taro.showLoading({ title: '准备下载...' })
+      const tokenRes = await createDownloadToken(taskId, 600)
+      const token = tokenRes?.token as string
+      if (!token) {
+        Taro.showToast({ title: '下载授权失败', icon: 'none' })
+        return
+      }
+      const url = getDownloadFileUrl(token)
+      const res = await Taro.downloadFile({ url })
+      if (res.statusCode && res.statusCode !== 200) {
+        Taro.showToast({ title: '下载失败', icon: 'none' })
+        return
+      }
+      const contentType = res.header?.['content-type'] || res.header?.['Content-Type'] || ''
+      const path = res.tempFilePath
+      if (contentType.includes('image')) {
+        await Taro.saveImageToPhotosAlbum({ filePath: path })
         Taro.showToast({ title: '保存成功', icon: 'success' })
+        return
+      }
+      const saved = await Taro.saveFile({ tempFilePath: path }).catch(() => null)
+      const filePath = saved?.savedFilePath || path
+      await Taro.openDocument({ filePath, showMenu: true }).catch(() => {
+        Taro.showToast({ title: '文件已保存', icon: 'success' })
       })
-      .catch(() => {
-        Taro.showToast({ title: '保存失败，请检查权限', icon: 'none' })
-      })
+    } catch {
+      Taro.showToast({ title: '下载失败，请稍后重试', icon: 'none' })
+    } finally {
+      Taro.hideLoading()
+    }
   }
 
   const handleHome = () => {
