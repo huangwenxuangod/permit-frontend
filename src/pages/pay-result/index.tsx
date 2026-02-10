@@ -10,6 +10,8 @@ export default function PayResultPage() {
   const { status, orderId: orderIdFromQuery } = router.params
   const isSuccess = status !== 'fail'
   const [downloadUrl, setDownloadUrl] = React.useState<string>('')
+  const [singleUrl, setSingleUrl] = React.useState<string>('')
+  const [layoutUrl, setLayoutUrl] = React.useState<string>('')
   const orderId = (orderIdFromQuery as string) || (Taro.getStorageSync('orderId') as string) || ''
 
   const handleDownload = () => {
@@ -46,6 +48,11 @@ export default function PayResultPage() {
         const taskId = Taro.getStorageSync('taskId') as string
         const finalColor = (Taro.getStorageSync('finalColor') as string) || 'white'
         const processed = (Taro.getStorageSync('processedUrls') as Record<string, string>) || {}
+        const baseline = (Taro.getStorageSync('baselineUrl') as string) || ''
+        const original = (Taro.getStorageSync('selectedImagePath') as string) || ''
+        setSingleUrl(processed[finalColor] || baseline || original || '')
+        const layoutMap = (Taro.getStorageSync('layoutUrls') as Record<string, string>) || {}
+        if (layoutMap[finalColor]) setLayoutUrl(layoutMap[finalColor])
         if (taskId) {
           if (!processed[finalColor]) {
             const bg = await generateBackground(taskId, finalColor, 300, 0, 200)
@@ -61,7 +68,13 @@ export default function PayResultPage() {
             setDownloadUrl(processed[finalColor])
           }
           const spec = { widthPx: 295, heightPx: 413, dpi: 300 }
-          await generateLayout(taskId, finalColor, spec.widthPx, spec.heightPx, spec.dpi, 200).catch(() => {})
+          const layoutRes: any = await generateLayout(taskId, finalColor, spec.widthPx, spec.heightPx, spec.dpi, 200).catch(() => null)
+          const layoutUrlRes = layoutRes?.url || layoutRes?.layoutUrl || layoutRes?.processedUrls?.[finalColor]
+          if (layoutUrlRes) {
+            const next = { ...layoutMap, [finalColor]: layoutUrlRes }
+            Taro.setStorageSync('layoutUrls', next)
+            setLayoutUrl(layoutUrlRes)
+          }
         }
       } catch (e) {
       }
@@ -84,6 +97,14 @@ export default function PayResultPage() {
 
       {isSuccess && (
         <View className='action-area'>
+          <View className='preview-card'>
+            <View className='preview-item'>
+              {singleUrl ? <Image className='preview-image' src={singleUrl} mode='aspectFill' /> : <Text className='preview-label'>单张照</Text>}
+            </View>
+            <View className='preview-item'>
+              {layoutUrl ? <Image className='preview-image' src={layoutUrl} mode='aspectFill' /> : <Text className='preview-label'>排版照</Text>}
+            </View>
+          </View>
           <View className='action-btns'>
             <Button className='btn-primary' onClick={handleDownload}>下载电子照</Button>
             <Button className='btn-secondary' onClick={handleViewOrder}>查看回执办理</Button>

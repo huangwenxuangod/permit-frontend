@@ -1,8 +1,9 @@
 import React from 'react'
 import { View, Text, Button, Image } from '@tarojs/components'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
+import { generateLayout } from '../../services/api'
 
 export default function PreviewPage() {
   const [activeTab, setActiveTab] = useState('single')
@@ -10,6 +11,8 @@ export default function PreviewPage() {
   const [imagePath, setImagePath] = useState<string>('')
   const [processedUrls, setProcessedUrls] = useState<Record<string, string>>({})
   const [baselineUrl, setBaselineUrl] = useState<string>('')
+  const [layoutUrls, setLayoutUrls] = useState<Record<string, string>>({})
+  const layoutLoadingRef = useRef(false)
 
   useEffect(() => {
     const p = Taro.getStorageSync('selectedImagePath')
@@ -18,7 +21,33 @@ export default function PreviewPage() {
     if (urls) setProcessedUrls(urls as Record<string, string>)
     const b = Taro.getStorageSync('baselineUrl')
     if (b) setBaselineUrl(b as string)
+    const l = Taro.getStorageSync('layoutUrls')
+    if (l) setLayoutUrls(l as Record<string, string>)
   }, [])
+
+  useEffect(() => {
+    const run = async () => {
+      if (activeTab !== 'layout') return
+      if (layoutLoadingRef.current) return
+      if (layoutUrls[bgColor]) return
+      const taskId = Taro.getStorageSync('taskId') as string
+      if (!taskId) return
+      layoutLoadingRef.current = true
+      try {
+        const spec = { widthPx: 295, heightPx: 413, dpi: 300 }
+        const res: any = await generateLayout(taskId, bgColor, spec.widthPx, spec.heightPx, spec.dpi, 200)
+        const url = res?.url || res?.layoutUrl || res?.processedUrls?.[bgColor]
+        if (url) {
+          const next = { ...layoutUrls, [bgColor]: url }
+          setLayoutUrls(next)
+          Taro.setStorageSync('layoutUrls', next)
+        }
+      } finally {
+        layoutLoadingRef.current = false
+      }
+    }
+    run()
+  }, [activeTab, bgColor, layoutUrls])
 
   const handleNext = () => {
     Taro.navigateTo({ url: '/pages/order-confirm/index' })
@@ -42,8 +71,10 @@ export default function PreviewPage() {
       </View>
 
       <View className='preview-container'>
-        <View className={`preview-image bg-${bgColor}`}>
-          {processedUrls[bgColor] ? (
+        <View className={`preview-image bg-${bgColor} ${activeTab === 'layout' ? 'is-layout' : ''}`}>
+          {activeTab === 'layout' && layoutUrls[bgColor] ? (
+            <Image src={layoutUrls[bgColor]} mode='aspectFit' style={{ width: '100%', height: '100%' }} />
+          ) : processedUrls[bgColor] ? (
             <Image src={processedUrls[bgColor]} mode='aspectFit' style={{ width: '100%', height: '100%' }} />
           ) : baselineUrl ? (
             <Image src={baselineUrl} mode='aspectFit' style={{ width: '100%', height: '100%' }} />

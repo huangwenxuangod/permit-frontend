@@ -64,6 +64,12 @@
     border-radius: $radius-sm;
     box-shadow: $shadow-lg;
     transition: transform 0.2s;
+
+    &.is-layout {
+      border-radius: $radius-md;
+      background-color: $bg-card;
+      border: 1px solid $border-color;
+    }
     
     &.bg-blue { background-color: #3B82F6; color: white; }
     &.bg-white { background-color: #FFFFFF; color: $text-main; border: 1px solid $border-color; }

@@ -1,20 +1,52 @@
 import React from 'react'
-import { View, Text, Button, Input, Picker } from '@tarojs/components'
-import { useState } from 'react'
+import { View, Text, Button, Input, Picker, Image } from '@tarojs/components'
+import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { createOrder, payWechat } from '../../services/api'
+import { createOrder, payWechat, generateLayout } from '../../services/api'
 
 export default function OrderConfirmPage() {
   const [city, setCity] = useState('')
   const [remark, setRemark] = useState('')
   const [paying, setPaying] = useState(false)
+  const [singleUrl, setSingleUrl] = useState('')
+  const [layoutUrl, setLayoutUrl] = useState('')
+  const [previewColor, setPreviewColor] = useState('white')
   
   const cities = ['广州', '深圳', '珠海', '佛山', '东莞', '中山']
 
   const handleCityChange = (e) => {
     setCity(cities[e.detail.value])
   }
+
+  useEffect(() => {
+    const color = (Taro.getStorageSync('previewColor') as string) || 'white'
+    setPreviewColor(color)
+    const processed = (Taro.getStorageSync('processedUrls') as Record<string, string>) || {}
+    const baseline = (Taro.getStorageSync('baselineUrl') as string) || ''
+    const original = (Taro.getStorageSync('selectedImagePath') as string) || ''
+    setSingleUrl(processed[color] || baseline || original || '')
+    const layoutMap = (Taro.getStorageSync('layoutUrls') as Record<string, string>) || {}
+    if (layoutMap[color]) setLayoutUrl(layoutMap[color])
+  }, [])
+
+  useEffect(() => {
+    const run = async () => {
+      if (layoutUrl) return
+      const taskId = Taro.getStorageSync('taskId') as string
+      if (!taskId) return
+      const spec = { widthPx: 295, heightPx: 413, dpi: 300 }
+      const res: any = await generateLayout(taskId, previewColor, spec.widthPx, spec.heightPx, spec.dpi, 200).catch(() => null)
+      const url = res?.url || res?.layoutUrl || res?.processedUrls?.[previewColor]
+      if (url) {
+        const layoutMap = (Taro.getStorageSync('layoutUrls') as Record<string, string>) || {}
+        const next = { ...layoutMap, [previewColor]: url }
+        Taro.setStorageSync('layoutUrls', next)
+        setLayoutUrl(url)
+      }
+    }
+    run()
+  }, [layoutUrl, previewColor])
 
   const handlePay = async () => {
     if (paying) return
@@ -74,8 +106,12 @@ export default function OrderConfirmPage() {
     <View className='order-confirm-page'>
       <View className='order-card'>
         <View className='thumbnails'>
-           <View className='thumb-item'>单张</View>
-           <View className='thumb-item'>排版</View>
+           <View className='thumb-item'>
+             {singleUrl ? <Image className='thumb-image' src={singleUrl} mode='aspectFill' /> : <Text className='thumb-label'>单张</Text>}
+           </View>
+           <View className='thumb-item'>
+             {layoutUrl ? <Image className='thumb-image' src={layoutUrl} mode='aspectFill' /> : <Text className='thumb-label'>排版</Text>}
+           </View>
         </View>
         
         <View className='order-info'>
