@@ -1,19 +1,13 @@
 import React from 'react'
-import { View, Text, Button, Image } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import { useState, useEffect, useRef } from 'react'
 import Taro, { useDidHide, useUnload } from '@tarojs/taro'
 import './index.scss'
-import { icons } from '../../assets/icons'
 import { uploadImage, createTask, getTask } from '../../services/api'
 
 export default function DetectionPage() {
-  const [progress, setProgress] = useState(0)
-  const [items, setItems] = useState([
-    { text: '人像取景范围/头肩姿势符合标准', status: 'pending' },
-    { text: '光线、色彩、清晰度', status: 'pending' },
-    { text: '表情与着装符合证件要求', status: 'pending' },
-    { text: '优化照片画质', status: 'pending' },
-  ])
+  const [previewImage, setPreviewImage] = useState('')
+  const [statusText, setStatusText] = useState('正在上传并生成证件照')
   const canceledRef = useRef(false)
   const timerRef = useRef<any>(null)
   const handleFailure = (message: string, error?: unknown) => {
@@ -22,7 +16,6 @@ export default function DetectionPage() {
       console.log('failure:', message, error)
     }
     Taro.showToast({ title: message, icon: 'none' })
-    updateItemStatus(3, 'pending')
     setTimeout(() => {
       if (!canceledRef.current) {
         Taro.navigateBack()
@@ -31,9 +24,6 @@ export default function DetectionPage() {
   }
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setProgress(prev => (canceledRef.current ? prev : (prev >= 100 ? 100 : prev + 2)))
-    }, 100)
     const run = async () => {
       try {
         const imagePath = Taro.getStorageSync('selectedImagePath') as string
@@ -41,12 +31,12 @@ export default function DetectionPage() {
           Taro.showToast({ title: '请先选择图片', icon: 'none' })
           return
         }
+        setPreviewImage(imagePath)
         if (canceledRef.current) return
-        updateItemStatus(0, 'processing')
+        setStatusText('正在上传照片')
         const objectKey = await uploadImage(imagePath)
         if (canceledRef.current) return
-        updateItemStatus(0, 'success')
-        updateItemStatus(1, 'processing')
+        setStatusText('正在生成证件照')
         const specCode = (Taro.getStorageSync('selectedSpecCode') as string) || 'default'
         const widthPx = 295
         const heightPx = 413
@@ -60,7 +50,6 @@ export default function DetectionPage() {
         let baselineUrl = task.baselineUrl as string
         let processedUrls = task.processedUrls as Record<string, string> || {}
         if (!baselineUrl || !processedUrls || task.status !== 'done') {
-          updateItemStatus(2, 'processing')
           for (let i = 0; i < 20; i++) {
             await new Promise(r => setTimeout(r, 1000))
             if (canceledRef.current) break
@@ -81,11 +70,15 @@ export default function DetectionPage() {
           return
         }
         if (!canceledRef.current) {
-          updateItemStatus(2, 'success')
-          updateItemStatus(3, 'success')
           Taro.setStorageSync('taskId', taskId)
           if (baselineUrl) Taro.setStorageSync('baselineUrl', baselineUrl)
           if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
+          setStatusText('生成成功，正在跳转')
+          setTimeout(() => {
+            if (!canceledRef.current) {
+              Taro.navigateTo({ url: '/pages/preview/index' })
+            }
+          }, 600)
         }
       } catch (e) {
         handleFailure('处理失败，请重新选择照片', e)
@@ -94,67 +87,36 @@ export default function DetectionPage() {
     run()
     return () => {
       canceledRef.current = true
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-        timerRef.current = null
-      }
+      timerRef.current = null
     }
   }, [])
 
   useDidHide(() => {
     canceledRef.current = true
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
+    timerRef.current = null
   })
   useUnload(() => {
     canceledRef.current = true
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
+    timerRef.current = null
   })
-
-  const updateItemStatus = (index, status) => {
-    setItems(prev => {
-      const newItems = [...prev]
-      newItems[index].status = status
-      return newItems
-    })
-  }
 
   return (
     <View className='detection-page'>
-      <Text className='status-text'>证件照生成中，预计耗时 ~ 5 秒</Text>
-      
-      <View className='progress-container'>
-        <View className='progress-bar' style={{ width: `${progress}%` }}></View>
+      <Text className='status-title'>{statusText}</Text>
+      <Text className='status-sub'>请保持不动，正在扫描并优化照片</Text>
+
+      <View className='scan-card'>
+        <Image className='scan-image' src={previewImage} mode='aspectFill' />
+        <View className='scan-overlay'>
+          <View className='scan-line' />
+          <View className='scan-glow' />
+        </View>
       </View>
 
-      <View className='checklist'>
-        {items.map((item, index) => (
-          <View key={index} className='check-item'>
-            <View className={`check-icon ${item.status}`}>
-              <Image
-                src={
-                  item.status === 'success'
-                    ? icons.success
-                    : item.status === 'processing'
-                    ? icons.loading
-                    : icons.history
-                }
-                style={{ width: '16px', height: '16px' }}
-              />
-            </View>
-            <Text className='check-text'>{item.text}</Text>
-          </View>
-        ))}
-      </View>
-
-      <View className='action-buttons'>
-        <Button className='btn-secondary' onClick={() => Taro.navigateBack()}>取消</Button>
-        <Button className='btn-primary' onClick={() => Taro.navigateTo({ url: '/pages/preview/index' })}>下一步</Button>
+      <View className='loading-row'>
+        <View className='loading-dot dot-1' />
+        <View className='loading-dot dot-2' />
+        <View className='loading-dot dot-3' />
       </View>
     </View>
   )
