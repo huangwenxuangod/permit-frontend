@@ -42,28 +42,12 @@ export function clearUser() {
   Taro.removeStorageSync(USER_KEY)
 }
 
-function getEnv(): string {
-  return process.env.TARO_ENV || ''
-}
-
 async function getCode(): Promise<string> {
-  const env = getEnv()
-  if (env === 'weapp') {
-    const res = await Taro.login()
-    try {
-      console.log('Taro.login result:', res)
-    } catch {}
-    return res.code || ''
-  } else if (env === 'h5') {
-    const qs = typeof window !== 'undefined' ? window.location.search : ''
-    const m = qs && qs.match(/[?&]code=([^&]+)/)
-    const codeFromUrl = m ? decodeURIComponent(m[1]) : ''
-    try {
-      console.log('H5 code from URL:', codeFromUrl)
-    } catch {}
-    return codeFromUrl
-  }
-  return ''
+  const res = await Taro.login()
+  try {
+    console.log('Taro.login result:', res)
+  } catch {}
+  return res.code || ''
 }
 
 export async function quickLogin(): Promise<boolean> {
@@ -73,7 +57,6 @@ export async function quickLogin(): Promise<boolean> {
     const code = await getCode()
     try {
       Taro.setStorageSync('lastLoginCode', code || '')
-      Taro.setStorageSync('lastLoginProvider', getEnv())
       if (code) console.log('quickLogin code:', code)
     } catch {}
     if (!code) return false

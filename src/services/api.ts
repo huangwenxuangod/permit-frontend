@@ -1,23 +1,21 @@
 import Taro from '@tarojs/taro'
 import { getToken } from './auth'
 
-const DEFAULT_API_BASE_URL = 'http://47.107.40.219:5000/api'
+const DEFAULT_API_BASE_URL = 'https://huangwenxuangod.xyz/api'
 const API_BASE_URL_KEY = 'apiBaseUrl'
 const ASSETS_BASE_URL_KEY = 'assetsBaseUrl'
 
 const getApiBaseUrl = () => {
   const fromStorage = Taro.getStorageSync(API_BASE_URL_KEY)
-  const fromEnv = process.env.PERMIT_API_BASE_URL
-  const raw = (fromStorage || fromEnv || DEFAULT_API_BASE_URL) as string
+  const raw = (fromStorage || DEFAULT_API_BASE_URL) as string
   return String(raw || '').trim().replace(/\/+$/, '')
 }
 
 const getAssetsBaseUrl = () => {
   const fromStorage = Taro.getStorageSync(ASSETS_BASE_URL_KEY)
-  const fromEnv = process.env.PERMIT_ASSETS_BASE_URL
   const apiBase = getApiBaseUrl()
   const fallback = apiBase.replace(/\/api.*$/, '')
-  const raw = (fromStorage || fromEnv || fallback) as string
+  const raw = (fromStorage || fallback) as string
   return String(raw || '').trim().replace(/\/+$/, '')
 }
 
@@ -66,8 +64,7 @@ export async function getSpecs() {
 }
 
 export async function login(code: string) {
-  const env = process.env.TARO_ENV || ''
-  const provider = env || 'weapp'
+  const provider = 'weapp'
   try {
     console.log('api.login payload:', { code, provider })
   } catch {}
