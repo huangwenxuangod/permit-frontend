@@ -51,7 +51,13 @@ export default function OrderConfirmPage() {
   const handlePay = async () => {
     if (paying) return
     if (!city) {
-      Taro.showToast({ title: '请选择办理城市', icon: 'none' })
+      try {
+        const res = await Taro.showActionSheet({ itemList: cities })
+        const selected = cities[res.tapIndex]
+        if (selected) {
+          setCity(selected)
+        }
+      } catch {}
       return
     }
     const previewColor = (Taro.getStorageSync('previewColor') as string) || 'white'
