@@ -81,7 +81,11 @@ export default function DetectionPage() {
           handleFailure('生成失败，请重新选择照片', { task, phase: 'createTask', errorMsg: task?.errorMsg })
           return
         }
-        let taskId = task.id as string
+        let taskId = (task.id || task.taskId || task.taskID) as string
+        if (!taskId) {
+          handleFailure('生成失败，请重新选择照片', { task, phase: 'createTask', errorMsg: task?.errorMsg })
+          return
+        }
         let baselineUrl = task.baselineUrl as string
         let processedUrls = task.processedUrls as Record<string, string> || {}
         if (!baselineUrl || !processedUrls || task.status !== 'done') {

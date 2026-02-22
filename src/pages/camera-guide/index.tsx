@@ -16,10 +16,6 @@ export default function CameraGuidePage() {
     heightPx: 567,
     dpi: 300
   })
-  const [bgColor, setBgColor] = useState('white')
-  const [beautyOn, setBeautyOn] = useState(false)
-  const [enhanceOn, setEnhanceOn] = useState(false)
-  const [watermarkOn, setWatermarkOn] = useState(false)
 
   useEffect(() => {
     const cached = Taro.getStorageSync('selectedSpecDetail') as any
@@ -63,17 +59,6 @@ export default function CameraGuidePage() {
     }
     run()
   }, [spec])
-
-  useEffect(() => {
-    const storedBg = (Taro.getStorageSync('selectedBackground') as string) || (Taro.getStorageSync('previewColor') as string)
-    if (storedBg) setBgColor(storedBg)
-    const storedBeauty = Number(Taro.getStorageSync('beauty') || 0)
-    const storedEnhance = Number(Taro.getStorageSync('enhance') || 0)
-    const storedWatermark = Taro.getStorageSync('watermark')
-    setBeautyOn(storedBeauty > 0)
-    setEnhanceOn(storedEnhance > 0)
-    setWatermarkOn(!!storedWatermark)
-  }, [])
 
   useEffect(() => {
     if (spec) {
@@ -184,58 +169,6 @@ export default function CameraGuidePage() {
         <Text>冲印尺寸：33x48mm</Text>
         <Text>像素尺寸：{specDetail.widthPx || 390}x{specDetail.heightPx || 567}px</Text>
         <Text>分辨率：{specDetail.dpi || 300}DPI</Text>
-      </View>
-
-      <View className='option-card'>
-        <Text className='option-title'>背景颜色</Text>
-        <View className='color-options'>
-          {(specDetail.availableColors && specDetail.availableColors.length > 0 ? specDetail.availableColors : ['white', 'blue', 'red']).map((color) => (
-            <View
-              key={color}
-              className={`color-pill ${bgColor === color ? 'active' : ''}`}
-              onClick={() => {
-                setBgColor(color)
-                Taro.setStorageSync('selectedBackground', color)
-                Taro.setStorageSync('previewColor', color)
-              }}
-            >
-              {color === 'white' ? '白底' : color === 'blue' ? '蓝底' : color === 'red' ? '红底' : color}
-            </View>
-          ))}
-        </View>
-        <Text className='option-title'>优化设置</Text>
-        <View className='toggle-row'>
-          <View
-            className={`toggle-pill ${beautyOn ? 'active' : ''}`}
-            onClick={() => {
-              const next = !beautyOn
-              setBeautyOn(next)
-              Taro.setStorageSync('beauty', next ? 1 : 0)
-            }}
-          >
-            美颜
-          </View>
-          <View
-            className={`toggle-pill ${enhanceOn ? 'active' : ''}`}
-            onClick={() => {
-              const next = !enhanceOn
-              setEnhanceOn(next)
-              Taro.setStorageSync('enhance', next ? 1 : 0)
-            }}
-          >
-            增强
-          </View>
-          <View
-            className={`toggle-pill ${watermarkOn ? 'active' : ''}`}
-            onClick={() => {
-              const next = !watermarkOn
-              setWatermarkOn(next)
-              Taro.setStorageSync('watermark', next)
-            }}
-          >
-            水印
-          </View>
-        </View>
       </View>
 
       <View className='action-buttons'>
