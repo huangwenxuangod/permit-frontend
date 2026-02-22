@@ -1,8 +1,10 @@
 import React from 'react'
 import { View, Text, Button, Image } from '@tarojs/components'
 import Taro, { useLoad } from '@tarojs/taro'
+import { useEffect, useState } from 'react'
 import './index.scss'
 import { icons } from '../../assets/icons'
+import { getSpecs } from '../../services/api'
 
 export default function Index() {
   useLoad(() => {
@@ -23,14 +25,38 @@ export default function Index() {
     '大': 'editFile',
   }
 
-  const hotSpecs = [
-    { name: '港澳通行证', size: '390x567px', tags: ['合回执', '电子照'] },
-    { name: '身份证', size: '358x441px', tags: ['合回执', '电子照'] },
-    { name: '护照', size: '390x567px', tags: ['合回执', '电子照'] },
-    { name: '社保证', size: '358x441px', tags: ['合回执', '电子照'] },
-    { name: '驾驶证', size: '260x378px', tags: ['电子照'] },
-    { name: '保安证', size: '358x441px', tags: ['电子照'] },
+  const fallbackSpecs = [
+    { code: 'hk-macao', name: '港澳通行证', widthPx: 390, heightPx: 567, dpi: 300 },
+    { code: 'id-card', name: '身份证', widthPx: 358, heightPx: 441, dpi: 300 },
+    { code: 'passport', name: '护照', widthPx: 390, heightPx: 567, dpi: 300 },
+    { code: 'social', name: '社保证', widthPx: 358, heightPx: 441, dpi: 300 },
+    { code: 'driver', name: '驾驶证', widthPx: 260, heightPx: 378, dpi: 300 },
+    { code: 'security', name: '保安证', widthPx: 358, heightPx: 441, dpi: 300 },
   ]
+  const getCategory = (name = '') => {
+    if (name.includes('回执')) return '回执'
+    if (name.includes('签证') || name.toLowerCase().includes('visa')) return '签证'
+    if (name.includes('考试') || name.includes('资格') || name.includes('教师')) return '考试'
+    if (name.includes('寸')) return '寸照'
+    return '其他'
+  }
+
+  const buildTags = (category: string) => {
+    const tags = ['电子照']
+    if (category !== '其他') tags.push(category)
+    return tags
+  }
+
+  const toSpecView = (spec: { code?: string; name: string; widthPx: number; heightPx: number; dpi?: number }) => {
+    const category = getCategory(spec.name)
+    return {
+      ...spec,
+      size: `${spec.widthPx}x${spec.heightPx}px`,
+      tags: buildTags(category),
+    }
+  }
+
+  const [hotSpecs, setHotSpecs] = useState<Array<{ code?: string; name: string; widthPx: number; heightPx: number; dpi?: number; size: string; tags: string[] }>>(() => fallbackSpecs.map(toSpecView))
 
   const handleMoreSpecs = () => {
     Taro.navigateTo({ url: '/pages/specs/index' })
@@ -48,9 +74,44 @@ export default function Index() {
     Taro.navigateTo({ url: '/pages/specs/index' })
   }
 
-  const handleSpecClick = (specName) => {
-    // Navigate to camera guide
-    Taro.navigateTo({ url: `/pages/camera-guide/index?spec=${specName}` })
+  useEffect(() => {
+    let mounted = true
+    getSpecs()
+      .then((list) => {
+        if (!mounted) return
+        if (Array.isArray(list) && list.length > 0) {
+          const views = list.map((item: any) => toSpecView({
+            code: item.code,
+            name: item.name,
+            widthPx: item.widthPx,
+            heightPx: item.heightPx,
+            dpi: item.dpi,
+          }))
+          setHotSpecs(views.slice(0, 6))
+        } else {
+          setHotSpecs(fallbackSpecs.map(toSpecView))
+        }
+      })
+      .catch(() => {
+        if (!mounted) return
+        setHotSpecs(fallbackSpecs.map(toSpecView))
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const handleSpecClick = (spec) => {
+    const code = spec.code || spec.name
+    Taro.setStorageSync('selectedSpecCode', code)
+    Taro.setStorageSync('selectedSpecDetail', {
+      code,
+      name: spec.name,
+      widthPx: spec.widthPx,
+      heightPx: spec.heightPx,
+      dpi: spec.dpi || 300
+    })
+    Taro.navigateTo({ url: `/pages/camera-guide/index?spec=${code}` })
   }
 
   return (
@@ -96,7 +157,7 @@ export default function Index() {
         
         <View className='specs-list'>
           {hotSpecs.map((spec, index) => (
-            <View key={index} className='spec-card' onClick={() => handleSpecClick(spec.name)}>
+            <View key={spec.code || index} className='spec-card' onClick={() => handleSpecClick(spec)}>
               <View className='spec-info'>
                 <Text className='spec-name'>{spec.name}</Text>
                 <Text className='spec-size'>{spec.size}</Text>

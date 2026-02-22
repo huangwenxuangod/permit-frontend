@@ -81,23 +81,22 @@ export default function OrderConfirmPage() {
       }
       Taro.setStorageSync('orderId', orderId)
       const payRes = await payWechat(orderId)
-      const payParams = payRes?.payParams || {}
-      if (payParams.type === 'mock') {
-        Taro.navigateTo({ url: `/pages/pay-result/index?status=success&orderId=${orderId}` })
-        return
-      }
-      const payPackage = payParams.package || payParams.prepay_id || payParams.prepayId
+      const payParams = payRes?.payParams || payRes || {}
+      const rawPrepay = payParams.package || payParams.prepay_id || payParams.prepayId
+      const payPackage = rawPrepay
+        ? (String(rawPrepay).startsWith('prepay_id=') ? rawPrepay : `prepay_id=${rawPrepay}`)
+        : ''
       if (!payPackage) {
         Taro.showToast({ title: '支付参数缺失', icon: 'none' })
         Taro.navigateTo({ url: `/pages/pay-result/index?status=fail&orderId=${orderId}` })
         return
       }
       await Taro.requestPayment({
-        timeStamp: String(payParams.timeStamp || ''),
-        nonceStr: payParams.nonceStr,
+        timeStamp: String(payParams.timeStamp || payParams.timestamp || ''),
+        nonceStr: payParams.nonceStr || payParams.nonce_str,
         package: payPackage,
-        signType: payParams.signType,
-        paySign: payParams.paySign
+        signType: payParams.signType || 'RSA',
+        paySign: payParams.paySign || payParams.sign
       })
       Taro.navigateTo({ url: `/pages/pay-result/index?status=success&orderId=${orderId}` })
     } catch {
