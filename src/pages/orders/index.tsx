@@ -53,6 +53,12 @@ export default function OrdersPage() {
     return channel || '其他'
   }
 
+  const formatOrderId = (id?: string) => {
+    if (!id) return '订单'
+    if (id.length <= 16) return `订单号：${id}`
+    return `订单号：${id.slice(0, 8)}...${id.slice(-4)}`
+  }
+
   return (
     <View className='orders-page'>
       <View className='warning-bar'>
@@ -87,7 +93,7 @@ export default function OrdersPage() {
               <View className='order-thumb'></View>
               <View className='order-content'>
                 <View className='order-header'>
-                  <Text className='order-name'>{order.orderId ? `订单号：${order.orderId}` : '订单'}</Text>
+                  <Text className='order-name'>{formatOrderId(order.orderId)}</Text>
                   <Text className='order-tag'>{formatChannel(order.channel)}</Text>
                 </View>
                 <Text className='order-details'>商品：{formatItems(order.items)}</Text>

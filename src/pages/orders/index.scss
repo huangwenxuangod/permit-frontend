@@ -44,13 +44,18 @@
     
     .order-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: $spacing-sm;
       
       .order-name {
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 14px;
+        font-weight: 600;
         color: $text-main;
-        margin-right: $spacing-sm;
+        flex: 1;
+        min-width: 0;
+        line-height: 1.4;
+        word-break: break-all;
       }
       
       .order-tag {
@@ -59,6 +64,7 @@
         background-color: rgba($primary, 0.1);
         padding: 2px 4px;
         border-radius: 4px;
+        flex-shrink: 0;
       }
     }
     
@@ -73,13 +79,14 @@
       align-items: center;
       
       .order-price {
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 15px;
+        font-weight: 600;
         color: $text-main;
       }
       
       .order-status {
         font-size: 14px;
+        flex-shrink: 0;
         
         &.completed { color: $success; }
         &.pending { color: $danger; }

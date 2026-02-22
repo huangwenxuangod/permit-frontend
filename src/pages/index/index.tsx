@@ -10,12 +10,9 @@ export default function Index() {
   })
 
   const services = [
-    { name: '制作证件照', label: '拍', color: 'blue' },
-    { name: '修复老照片', label: '修', color: 'purple' },
-    { name: '回执专区', label: '回', color: 'orange' },
-    { name: '智能清晰', label: '清', color: 'green' },
-    { name: '换底色', label: '色', color: 'pink' },
-    { name: '改文件大小', label: '大', color: 'indigo' },
+    { name: '制作证件照', label: '拍', color: 'blue', enabled: true },
+    { name: '修复老照片', label: '修', color: 'purple', enabled: false },
+    { name: '回执专区', label: '回', color: 'orange', enabled: true },
   ]
   const serviceIconKeyMap: Record<string, keyof typeof icons> = {
     '拍': 'camera',
@@ -36,6 +33,18 @@ export default function Index() {
   ]
 
   const handleMoreSpecs = () => {
+    Taro.navigateTo({ url: '/pages/specs/index' })
+  }
+
+  const handleServiceClick = (item) => {
+    if (item.label === '修') {
+      Taro.showToast({ title: '老照片修复还在开发中', icon: 'none' })
+      return
+    }
+    if (item.label === '回') {
+      Taro.navigateTo({ url: '/pages/specs/index' })
+      return
+    }
     Taro.navigateTo({ url: '/pages/specs/index' })
   }
 
@@ -65,7 +74,7 @@ export default function Index() {
       <View className='section-container'>
         <View className='services-grid'>
           {services.map((item, index) => (
-            <View key={index} className='service-item' onClick={handleMoreSpecs}>
+            <View key={index} className={`service-item ${item.enabled ? '' : 'disabled'}`} onClick={() => handleServiceClick(item)}>
               <View className={`service-icon bg-${item.color}-100`}>
                 <Image src={icons[serviceIconKeyMap[item.label]]} style={{ width: '24px', height: '24px' }} />
               </View>
