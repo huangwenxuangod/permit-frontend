@@ -8,6 +8,7 @@ import { generateLayout } from '../../services/api'
 export default function PreviewPage() {
   const [activeTab, setActiveTab] = useState('single')
   const [bgColor, setBgColor] = useState('blue')
+  const [availableColors, setAvailableColors] = useState<string[]>([])
   const [imagePath, setImagePath] = useState<string>('')
   const [processedUrls, setProcessedUrls] = useState<Record<string, string>>({})
   const [baselineUrl, setBaselineUrl] = useState<string>('')
@@ -15,6 +16,7 @@ export default function PreviewPage() {
   const [beautyOn, setBeautyOn] = useState(false)
   const [enhanceOn, setEnhanceOn] = useState(false)
   const [outfitStyle, setOutfitStyle] = useState('')
+  const [watermarkOn, setWatermarkOn] = useState(false)
   const layoutLoadingRef = useRef(false)
 
   useEffect(() => {
@@ -26,6 +28,16 @@ export default function PreviewPage() {
     if (b) setBaselineUrl(b as string)
     const l = Taro.getStorageSync('layoutUrls')
     if (l) setLayoutUrls(l as Record<string, string>)
+    const specDetail = Taro.getStorageSync('selectedSpecDetail') as any
+    const storedColors = Array.isArray(specDetail?.availableColors) ? specDetail.availableColors : []
+    const fromStorage = (Taro.getStorageSync('previewColor') as string) || (Taro.getStorageSync('selectedBackground') as string)
+    if (storedColors.length > 0) setAvailableColors(storedColors)
+    else if (urls && typeof urls === 'object') {
+      const keys = Object.keys(urls as Record<string, string>)
+      if (keys.length > 0) setAvailableColors(keys)
+    }
+    if (fromStorage) setBgColor(fromStorage)
+    setWatermarkOn(!!Taro.getStorageSync('watermark'))
   }, [])
 
   useEffect(() => {
@@ -37,7 +49,12 @@ export default function PreviewPage() {
       if (!taskId) return
       layoutLoadingRef.current = true
       try {
-        const spec = { widthPx: 295, heightPx: 413, dpi: 300 }
+        const specDetail = (Taro.getStorageSync('selectedSpecDetail') as any) || {}
+        const spec = {
+          widthPx: Number(specDetail?.widthPx || 295) || 295,
+          heightPx: Number(specDetail?.heightPx || 413) || 413,
+          dpi: Number(specDetail?.dpi || 300) || 300
+        }
         const res: any = await generateLayout(taskId, bgColor, spec.widthPx, spec.heightPx, spec.dpi, 200)
         const url = res?.url || res?.layoutUrl || res?.processedUrls?.[bgColor]
         if (url) {
@@ -59,29 +76,23 @@ export default function PreviewPage() {
   const handleToggleBeauty = () => {
     const next = !beautyOn
     setBeautyOn(next)
-    Taro.showToast({ title: next ? '美颜已开启（预览）' : '美颜已关闭', icon: 'none' })
+    Taro.setStorageSync('beauty', next ? 1 : 0)
+    Taro.showToast({ title: '设置已保存，将在重新生成时生效', icon: 'none' })
   }
 
   const handleToggleEnhance = () => {
     const next = !enhanceOn
     setEnhanceOn(next)
-    Taro.showToast({ title: next ? '增强已开启（预览）' : '增强已关闭', icon: 'none' })
+    Taro.setStorageSync('enhance', next ? 1 : 0)
+    Taro.showToast({ title: '设置已保存，将在重新生成时生效', icon: 'none' })
   }
 
   const handleOutfit = async () => {
-    try {
-      const res = await Taro.showActionSheet({ itemList: ['证件正装', '职业装', '不更换'] })
-      const map = ['证件正装', '职业装', '不更换']
-      const selected = map[res.tapIndex]
-      if (selected === '不更换') {
-        setOutfitStyle('')
-        Taro.showToast({ title: '已恢复原始穿着', icon: 'none' })
-        return
-      }
-      setOutfitStyle(selected)
-      Taro.showToast({ title: `已选择${selected}（预览）`, icon: 'none' })
-    } catch {}
+    setOutfitStyle('')
+    Taro.showToast({ title: '换装服务即将上线', icon: 'none' })
   }
+
+  const colors = availableColors.length > 0 ? availableColors : ['white', 'blue', 'red']
 
   return (
     <View className='preview-page'>
@@ -120,9 +131,18 @@ export default function PreviewPage() {
         <View className='tool-row'>
           <Text className='tool-label'>背景：</Text>
           <View className='color-options'>
-            <View className={`color-btn white ${bgColor === 'white' ? 'active' : ''}`} onClick={() => { setBgColor('white'); Taro.setStorageSync('previewColor', 'white') }}>白</View>
-            <View className={`color-btn blue ${bgColor === 'blue' ? 'active' : ''}`} onClick={() => { setBgColor('blue'); Taro.setStorageSync('previewColor', 'blue') }}>蓝</View>
-            <View className={`color-btn red ${bgColor === 'red' ? 'active' : ''}`} onClick={() => { setBgColor('red'); Taro.setStorageSync('previewColor', 'red') }}>红</View>
+            {colors.map((color) => (
+              <View
+                key={color}
+                className={`color-btn ${color} ${bgColor === color ? 'active' : ''}`}
+                onClick={() => {
+                  setBgColor(color)
+                  Taro.setStorageSync('previewColor', color)
+                }}
+              >
+                {color === 'white' ? '白' : color === 'blue' ? '蓝' : color === 'red' ? '红' : color}
+              </View>
+            ))}
           </View>
         </View>
         
@@ -134,6 +154,17 @@ export default function PreviewPage() {
             </View>
             <View className={`tool-btn ${beautyOn ? 'active' : ''}`} onClick={handleToggleBeauty}>美颜</View>
             <View className={`tool-btn ${enhanceOn ? 'active' : ''}`} onClick={handleToggleEnhance}>增强</View>
+            <View
+              className={`tool-btn ${watermarkOn ? 'active' : ''}`}
+              onClick={() => {
+                const next = !watermarkOn
+                setWatermarkOn(next)
+                Taro.setStorageSync('watermark', next)
+                Taro.showToast({ title: '设置已保存，将在重新生成时生效', icon: 'none' })
+              }}
+            >
+              水印
+            </View>
           </View>
         </View>
       </View>

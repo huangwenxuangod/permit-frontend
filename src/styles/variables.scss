@@ -1,14 +1,14 @@
 /* Spacing */
 $spacing-xs: 8rpx;
 $spacing-sm: 16rpx;
-$spacing-md: 32rpx;
-$spacing-lg: 48rpx;
-$spacing-xl: 64rpx;
+$spacing-md: 28rpx;
+$spacing-lg: 44rpx;
+$spacing-xl: 60rpx;
 
 /* Radius */
 $radius-sm: 8rpx;
-$radius-md: 16rpx;
-$radius-lg: 24rpx;
+$radius-md: 14rpx;
+$radius-lg: 22rpx;
 $radius-full: 19998rpx;
 
 /* Colors */
@@ -33,6 +33,6 @@ $text-white: #FFFFFF;
 $border-color: #E2E8F0;
 
 /* Shadows */
-$shadow-sm: 0 2rpx 4rpx 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 8rpx 12rpx -2rpx rgba(0, 0, 0, 0.1), 0 4rpx 8rpx -4rpx rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 20rpx 30rpx -6rpx rgba(0, 0, 0, 0.1), 0 8rpx 12rpx -8rpx rgba(0, 0, 0, 0.1);
+$shadow-sm: 0 2rpx 8rpx 0 rgba(15, 23, 42, 0.04);
+$shadow-md: 0 10rpx 24rpx -8rpx rgba(15, 23, 42, 0.12);
+$shadow-lg: 0 20rpx 40rpx -12rpx rgba(15, 23, 42, 0.14);

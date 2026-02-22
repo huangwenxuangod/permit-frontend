@@ -14,6 +14,7 @@
   padding: $spacing-md;
   margin-bottom: $spacing-md;
   box-shadow: $shadow-sm;
+  border: 1px solid $border-color;
 }
 
 .thumbnails {
@@ -26,6 +27,7 @@
     height: 80px;
     background-color: $bg-input;
     border-radius: $radius-sm;
+    border: 1px solid $border-color;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,6 +131,7 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: $shadow-lg;
+  border-top: 1px solid $border-color;
   
   .total-info {
     font-size: 14px;

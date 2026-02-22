@@ -10,7 +10,7 @@ import { getSpecs } from '../../services/api'
 export default function SpecsPage() {
   const [activeTab, setActiveTab] = useState('全部')
   const [searchQuery, setSearchQuery] = useState('')
-  const [remoteSpecs, setRemoteSpecs] = useState<Array<{ code: string, name: string, widthPx: number, heightPx: number, dpi: number }>>([])
+  const [remoteSpecs, setRemoteSpecs] = useState<Array<any>>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -42,14 +42,28 @@ export default function SpecsPage() {
   }
 
   const specs = (remoteSpecs.length > 0 ? remoteSpecs.map(s => {
-    const category = getCategory(s.name)
+    const name = s?.name || s?.specName || '证件照'
+    const code = s?.specCode || s?.code || name
+    const widthPx = Number(s?.widthPx || s?.width || s?.pixelWidth || 0) || 390
+    const heightPx = Number(s?.heightPx || s?.height || s?.pixelHeight || 0) || 567
+    const dpi = Number(s?.dpi || s?.resolution || 0) || 300
+    const availableColors = Array.isArray(s?.availableColors)
+      ? s.availableColors
+      : Array.isArray(s?.bgColors)
+        ? s.bgColors
+        : Array.isArray(s?.colors)
+          ? s.colors
+          : []
+    const category = getCategory(name)
     return {
-      code: s.code,
-      name: s.name,
-      widthPx: s.widthPx,
-      heightPx: s.heightPx,
-      dpi: s.dpi,
-      size: `${s.widthPx}x${s.heightPx}px`,
+      itemId: s?.itemId || s?.id,
+      code,
+      name,
+      widthPx,
+      heightPx,
+      dpi,
+      availableColors,
+      size: `${widthPx}x${heightPx}px`,
       category,
       tags: buildTags(category)
     }
@@ -91,14 +105,23 @@ export default function SpecsPage() {
 
   const handleSpecClick = (spec) => {
     const code = (spec.code || spec.name)
+    const availableColors = Array.isArray(spec.availableColors) ? spec.availableColors : []
+    const defaultBackground = availableColors[0] || 'white'
     Taro.setStorageSync('selectedSpecCode', code)
     Taro.setStorageSync('selectedSpecDetail', {
       code,
+      itemId: spec.itemId,
       name: spec.name,
       widthPx: spec.widthPx,
       heightPx: spec.heightPx,
-      dpi: spec.dpi
+      dpi: spec.dpi,
+      availableColors
     })
+    if (spec.itemId !== undefined && spec.itemId !== null) {
+      Taro.setStorageSync('selectedSpecItemId', spec.itemId)
+    }
+    Taro.setStorageSync('selectedBackground', defaultBackground)
+    Taro.setStorageSync('previewColor', defaultBackground)
     Taro.navigateTo({ url: `/pages/camera-guide/index?spec=${code}` })
   }
 

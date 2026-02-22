@@ -51,39 +51,81 @@ const normalizeTask = (data: any) => {
   return data
 }
 
+const isOpCodeOk = (value: any) => {
+  if (value === 0 || value === '0') return true
+  if (value === 200 || value === '200') return true
+  if (typeof value === 'string') {
+    const upper = value.toUpperCase()
+    if (upper === 'OK' || upper === 'SUCCESS') return true
+  }
+  return false
+}
+
+const ensureSuccess = (data: any, fallbackMessage: string) => {
+  if (!data) return
+  if (data.error) throw new Error(data.error.message || fallbackMessage)
+  const opCode = data.opCode ?? data.opcode ?? data.code ?? data.statusCode
+  if (opCode === undefined || opCode === null) return
+  if (!isOpCodeOk(opCode)) {
+    const message = data.message || data.msg || data.opMsg || data.errorMsg || fallbackMessage
+    throw new Error(message)
+  }
+}
+
+const unwrapData = (data: any) => {
+  if (!data) return data
+  if (data.data) return data.data
+  if (data.result) return data.result
+  return data
+}
+
 const buildDownloadFileUrl = (token: string) => `${getApiBaseUrl()}/download/file?token=${encodeURIComponent(token)}`
 
 const createIdempotencyKey = () => `mini-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 const createRequestId = () => `req-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 
 export async function getSpecs() {
-  const res = await Taro.request({ url: `${getApiBaseUrl()}/specs`, method: 'GET' })
+  const res = await Taro.request({ url: `${getApiBaseUrl()}/zjz/item/list`, method: 'GET' })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Specs error')
-  return data
+  ensureSuccess(data, 'Specs error')
+  const payload = unwrapData(data)
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload?.items)) return payload.items
+  if (Array.isArray(payload?.list)) return payload.list
+  return []
+}
+
+export async function getZjzItem(itemId: number | string) {
+  const res = await Taro.request({
+    url: `${getApiBaseUrl()}/zjz/item/get`,
+    method: 'GET',
+    data: { itemId }
+  })
+  const data = res.data as any
+  ensureSuccess(data, 'Item error')
+  return unwrapData(data)
 }
 
 export async function login(code: string) {
-  const provider = 'weapp'
   try {
-    console.log('api.login payload:', { code, provider })
+    console.log('api.login payload:', { code })
   } catch {}
   const res = await Taro.request({
     url: `${getApiBaseUrl()}/login`,
     method: 'POST',
-    data: { code, provider },
+    data: { code },
     header: { 'Content-Type': 'application/json' }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Login error')
-  return data
+  ensureSuccess(data, 'Login error')
+  return unwrapData(data)
 }
 
 export async function me() {
   const res = await Taro.request({ url: `${getApiBaseUrl()}/me`, method: 'GET' })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Me error')
-  return data
+  ensureSuccess(data, 'Me error')
+  return unwrapData(data)
 }
 
 // 已取消绑定手机号能力：不再导出 bindPhoneNumber
@@ -136,26 +178,44 @@ export async function uploadImage(filePath: string) {
     ;(err as any).upload = { url, fileSize, networkType }
     throw err
   }
+  ensureSuccess(data, 'Upload error')
   return data.objectKey as string
 }
 
-export async function createTask(payload: { specCode: string, sourceObjectKey: string, widthPx: number, heightPx: number, dpi: number, defaultBackground?: string }) {
+export async function createTask(payload: {
+  specCode: string
+  itemId: number | string
+  sourceObjectKey: string
+  widthPx: number
+  heightPx: number
+  dpi: number
+  defaultBackground?: string
+  availableColors?: string[]
+  colors?: string[]
+  beauty?: number
+  enhance?: number
+  watermark?: boolean
+}) {
   const res = await Taro.request({
-    url: `${getApiBaseUrl()}/tasks`,
+    url: `${getApiBaseUrl()}/task/create`,
     method: 'POST',
     data: payload,
     header: { 'Content-Type': 'application/json' }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Task error')
-  return normalizeTask(data)
+  ensureSuccess(data, 'Task error')
+  return normalizeTask(unwrapData(data))
 }
 
 export async function getTask(id: string) {
-  const res = await Taro.request({ url: `${getApiBaseUrl()}/tasks/${id}`, method: 'GET' })
+  const res = await Taro.request({
+    url: `${getApiBaseUrl()}/task/get`,
+    method: 'GET',
+    data: { id }
+  })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Get task error')
-  return normalizeTask(data)
+  ensureSuccess(data, 'Get task error')
+  return normalizeTask(unwrapData(data))
 }
 
 export async function generateBackground(id: string, color: string, dpi?: number, render?: number, kb?: number) {
@@ -166,8 +226,8 @@ export async function generateBackground(id: string, color: string, dpi?: number
     header: { 'Content-Type': 'application/json' }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Background error')
-  return normalizeTask(data)
+  ensureSuccess(data, 'Background error')
+  return normalizeTask(unwrapData(data))
 }
 
 export async function generateLayout(id: string, color: string, widthPx: number, heightPx: number, dpi: number, kb?: number) {
@@ -178,17 +238,18 @@ export async function generateLayout(id: string, color: string, widthPx: number,
     header: { 'Content-Type': 'application/json' }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Layout error')
-  return normalizeTask(data)
+  ensureSuccess(data, 'Layout error')
+  return normalizeTask(unwrapData(data))
 }
 
 export async function getDownloadInfo(taskId: string) {
   const res = await Taro.request({ url: `${getApiBaseUrl()}/download/${taskId}`, method: 'GET' })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Download error')
-  if (data && data.url) data.url = toAbsolute(data.url)
-  if (data && data.urls) data.urls = normalizeUrlMap(data.urls)
-  return data
+  ensureSuccess(data, 'Download error')
+  const payload = unwrapData(data)
+  if (payload && payload.url) payload.url = toAbsolute(payload.url)
+  if (payload && payload.urls) payload.urls = normalizeUrlMap(payload.urls)
+  return payload
 }
 
 export async function createDownloadToken(taskId: string, ttlSeconds = 600) {
@@ -199,8 +260,8 @@ export async function createDownloadToken(taskId: string, ttlSeconds = 600) {
     header: { 'Content-Type': 'application/json' }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Download token error')
-  return data
+  ensureSuccess(data, 'Download token error')
+  return unwrapData(data)
 }
 
 export function getDownloadFileUrl(token: string) {
@@ -215,8 +276,8 @@ export async function createOrder(payload: { taskId: string, items: any[], city:
     header: { 'Content-Type': 'application/json' }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Order error')
-  return data
+  ensureSuccess(data, 'Order error')
+  return unwrapData(data)
 }
 
 export async function payWechat(orderId: string) {
@@ -227,8 +288,8 @@ export async function payWechat(orderId: string) {
     header: { 'Content-Type': 'application/json', 'Idempotency-Key': createIdempotencyKey() }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Pay wechat error')
-  return data
+  ensureSuccess(data, 'Pay wechat error')
+  return unwrapData(data)
 }
 
 export async function payDouyin(orderId: string) {
@@ -239,8 +300,8 @@ export async function payDouyin(orderId: string) {
     header: { 'Content-Type': 'application/json', 'Idempotency-Key': createIdempotencyKey() }
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Pay douyin error')
-  return data
+  ensureSuccess(data, 'Pay douyin error')
+  return unwrapData(data)
 }
 
 export async function getOrders(params?: { page?: number; pageSize?: number; status?: string; channel?: string }) {
@@ -250,6 +311,6 @@ export async function getOrders(params?: { page?: number; pageSize?: number; sta
     data: params || {},
   })
   const data = res.data as any
-  if (data && data.error) throw new Error(data.error.message || 'Orders error')
-  return data
+  ensureSuccess(data, 'Orders error')
+  return unwrapData(data)
 }

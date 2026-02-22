@@ -47,16 +47,34 @@ export default function Index() {
     return tags
   }
 
-  const toSpecView = (spec: { code?: string; name: string; widthPx: number; heightPx: number; dpi?: number }) => {
-    const category = getCategory(spec.name)
+  const toSpecView = (spec: any) => {
+    const name = spec?.name || spec?.specName || '证件照'
+    const code = spec?.specCode || spec?.code || name
+    const widthPx = Number(spec?.widthPx || spec?.width || spec?.pixelWidth || 0) || 390
+    const heightPx = Number(spec?.heightPx || spec?.height || spec?.pixelHeight || 0) || 567
+    const dpi = Number(spec?.dpi || spec?.resolution || 0) || 300
+    const availableColors = Array.isArray(spec?.availableColors)
+      ? spec.availableColors
+      : Array.isArray(spec?.bgColors)
+        ? spec.bgColors
+        : Array.isArray(spec?.colors)
+          ? spec.colors
+          : []
+    const category = getCategory(name)
     return {
-      ...spec,
-      size: `${spec.widthPx}x${spec.heightPx}px`,
+      itemId: spec?.itemId || spec?.id,
+      code,
+      name,
+      widthPx,
+      heightPx,
+      dpi,
+      availableColors,
+      size: `${widthPx}x${heightPx}px`,
       tags: buildTags(category),
     }
   }
 
-  const [hotSpecs, setHotSpecs] = useState<Array<{ code?: string; name: string; widthPx: number; heightPx: number; dpi?: number; size: string; tags: string[] }>>(() => fallbackSpecs.map(toSpecView))
+  const [hotSpecs, setHotSpecs] = useState<Array<{ itemId?: number | string; code?: string; name: string; widthPx: number; heightPx: number; dpi?: number; availableColors?: string[]; size: string; tags: string[] }>>(() => fallbackSpecs.map(toSpecView))
 
   const handleMoreSpecs = () => {
     Taro.navigateTo({ url: '/pages/specs/index' })
@@ -80,13 +98,7 @@ export default function Index() {
       .then((list) => {
         if (!mounted) return
         if (Array.isArray(list) && list.length > 0) {
-          const views = list.map((item: any) => toSpecView({
-            code: item.code,
-            name: item.name,
-            widthPx: item.widthPx,
-            heightPx: item.heightPx,
-            dpi: item.dpi,
-          }))
+          const views = list.map((item: any) => toSpecView(item))
           setHotSpecs(views.slice(0, 6))
         } else {
           setHotSpecs(fallbackSpecs.map(toSpecView))
@@ -103,14 +115,23 @@ export default function Index() {
 
   const handleSpecClick = (spec) => {
     const code = spec.code || spec.name
+    const availableColors = Array.isArray(spec.availableColors) ? spec.availableColors : []
+    const defaultBackground = availableColors[0] || 'white'
     Taro.setStorageSync('selectedSpecCode', code)
+    if (spec.itemId !== undefined && spec.itemId !== null) {
+      Taro.setStorageSync('selectedSpecItemId', spec.itemId)
+    }
     Taro.setStorageSync('selectedSpecDetail', {
       code,
+      itemId: spec.itemId,
       name: spec.name,
       widthPx: spec.widthPx,
       heightPx: spec.heightPx,
-      dpi: spec.dpi || 300
+      dpi: spec.dpi || 300,
+      availableColors
     })
+    Taro.setStorageSync('selectedBackground', defaultBackground)
+    Taro.setStorageSync('previewColor', defaultBackground)
     Taro.navigateTo({ url: `/pages/camera-guide/index?spec=${code}` })
   }
 

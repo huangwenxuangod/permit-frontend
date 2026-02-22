@@ -20,7 +20,7 @@ export default function OrderConfirmPage() {
   }
 
   useEffect(() => {
-    const color = (Taro.getStorageSync('previewColor') as string) || 'white'
+    const color = (Taro.getStorageSync('previewColor') as string) || (Taro.getStorageSync('selectedBackground') as string) || 'white'
     setPreviewColor(color)
     const processed = (Taro.getStorageSync('processedUrls') as Record<string, string>) || {}
     const baseline = (Taro.getStorageSync('baselineUrl') as string) || ''
@@ -35,7 +35,12 @@ export default function OrderConfirmPage() {
       if (layoutUrl) return
       const taskId = Taro.getStorageSync('taskId') as string
       if (!taskId) return
-      const spec = { widthPx: 295, heightPx: 413, dpi: 300 }
+      const specDetail = (Taro.getStorageSync('selectedSpecDetail') as any) || {}
+      const spec = {
+        widthPx: Number(specDetail?.widthPx || 295) || 295,
+        heightPx: Number(specDetail?.heightPx || 413) || 413,
+        dpi: Number(specDetail?.dpi || 300) || 300
+      }
       const res: any = await generateLayout(taskId, previewColor, spec.widthPx, spec.heightPx, spec.dpi, 200).catch(() => null)
       const url = res?.url || res?.layoutUrl || res?.processedUrls?.[previewColor]
       if (url) {

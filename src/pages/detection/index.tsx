@@ -50,10 +50,33 @@ export default function DetectionPage() {
         if (canceledRef.current) return
         setStatusText('正在生成证件照')
         const specCode = (Taro.getStorageSync('selectedSpecCode') as string) || 'default'
-        const widthPx = 295
-        const heightPx = 413
-        const dpi = 300
-        const task = await createTask({ specCode, sourceObjectKey: objectKey, widthPx, heightPx, dpi, defaultBackground: 'white' })
+        const specDetail = (Taro.getStorageSync('selectedSpecDetail') as any) || {}
+        const widthPx = Number(specDetail?.widthPx || 295) || 295
+        const heightPx = Number(specDetail?.heightPx || 413) || 413
+        const dpi = Number(specDetail?.dpi || 300) || 300
+        const itemId = specDetail?.itemId || (Taro.getStorageSync('selectedSpecItemId') as any) || 0
+        const availableColors = Array.isArray(specDetail?.availableColors) ? specDetail.availableColors : []
+        const defaultBackground = (Taro.getStorageSync('selectedBackground') as string) || (Taro.getStorageSync('previewColor') as string) || availableColors[0] || 'white'
+        const beauty = Number(Taro.getStorageSync('beauty') || 0)
+        const enhance = Number(Taro.getStorageSync('enhance') || 0)
+        const watermark = !!Taro.getStorageSync('watermark')
+        const payload: any = {
+          specCode,
+          itemId,
+          sourceObjectKey: objectKey,
+          widthPx,
+          heightPx,
+          dpi,
+          defaultBackground,
+          beauty,
+          enhance,
+          watermark
+        }
+        if (availableColors.length > 0) {
+          payload.availableColors = availableColors
+          payload.colors = availableColors
+        }
+        const task = await createTask(payload)
         if (!task || task.status === 'failed') {
           handleFailure('生成失败，请重新选择照片', { task, phase: 'createTask', errorMsg: task?.errorMsg })
           return

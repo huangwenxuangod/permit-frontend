@@ -45,9 +45,9 @@
 page {
   background-color: $bg-body;
   color: $text-main;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 28rpx;
-  line-height: 1.5;
+  font-family: 'PingFang SC', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 26rpx;
+  line-height: 1.6;
 }
 
 view, text, image, button, input {
@@ -119,7 +119,7 @@ view, text, image, button, input {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20rpx 40rpx;
+  padding: 18rpx 36rpx;
   border-radius: $radius-full;
   font-weight: 600;
   transition: opacity 0.2s;
@@ -141,6 +141,7 @@ view, text, image, button, input {
   border-radius: $radius-lg;
   padding: $spacing-md;
   box-shadow: $shadow-sm;
+  border: 1px solid $border-color;
 }
 
 .tag {

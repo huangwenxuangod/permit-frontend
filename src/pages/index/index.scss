@@ -5,10 +5,8 @@
 
 .header-section {
   padding: $spacing-md;
-  background-color: $bg-card;
+  background-color: $bg-body;
   padding-bottom: $spacing-lg;
-  border-bottom-left-radius: $radius-lg;
-  border-bottom-right-radius: $radius-lg;
 }
 
 .brand-tag {
@@ -26,51 +24,52 @@
 }
 
 .hero-banner {
-  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  background: $bg-card;
   border-radius: $radius-lg;
   padding: $spacing-lg;
-  color: $text-white;
-  box-shadow: $shadow-md;
+  color: $text-main;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border-color;
   min-height: 140px;
   display: flex;
   align-items: center;
-  
+
   .hero-content {
     flex: 1;
   }
-  
+
   .hero-title {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
     display: block;
     margin-bottom: $spacing-xs;
   }
-  
+
   .hero-subtitle {
     font-size: 14px;
-    opacity: 0.9;
+    color: $text-secondary;
     display: block;
     margin-bottom: $spacing-md;
   }
-  
+
   .hero-btn {
     display: inline-flex;
-    background-color: $text-white;
-    color: $primary;
+    background-color: $primary;
+    color: $text-white;
     font-size: 14px;
-    padding: 6px 16px;
+    padding: 8px 18px;
     border-radius: $radius-full;
     border: none;
     line-height: 1.5;
     margin: 0;
     transition: opacity 0.2s, transform 0.2s;
-    
+
     &:active {
       opacity: 0.8;
       transform: scale(0.98);
     }
-    
-    &::after { border: none; } /* Remove Taro button border */
+
+    &::after { border: none; }
   }
 }
 
@@ -86,6 +85,7 @@
   border-radius: $radius-lg;
   padding: $spacing-md 0;
   box-shadow: $shadow-sm;
+  border: 1px solid $border-color;
   
   .service-item {
     width: 33.33%;
@@ -175,6 +175,7 @@
     justify-content: space-between;
     align-items: center;
     box-shadow: $shadow-sm;
+    border: 1px solid $border-color;
     transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
     
     &:active {
