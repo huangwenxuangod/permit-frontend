@@ -89,19 +89,30 @@ export default function ProfilePage() {
       Taro.switchTab({ url: '/pages/orders/index' })
       return
     }
+    if (item.action === 'settings') {
+      Taro.navigateTo({ url: '/pages/settings/index' })
+      return
+    }
     if (item.action === 'share') {
-      Taro.showToast({ title: '请使用右上角分享', icon: 'none' })
+      Taro.showModal({
+        title: '分享给好友',
+        content: '点击右上角菜单，选择“分享给好友”或“分享到朋友圈”。',
+        showCancel: false
+      })
+      try {
+        Taro.showShareMenu()
+      } catch {}
       return
     }
     if (item.action === 'faq') {
-      Taro.showToast({ title: '常见问题整理中', icon: 'none' })
+      Taro.navigateTo({ url: '/pages/faq/index' })
       return
     }
     Taro.showToast({ title: '功能开发中', icon: 'none' })
   }
 
   const handleCustomerService = () => {
-    Taro.showToast({ title: '客服暂未接入', icon: 'none' })
+    Taro.navigateTo({ url: '/pages/support/index' })
   }
 
   const handleShortcut = (action: string) => {

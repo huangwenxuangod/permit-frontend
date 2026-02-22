@@ -242,3 +242,14 @@ export async function payDouyin(orderId: string) {
   if (data && data.error) throw new Error(data.error.message || 'Pay douyin error')
   return data
 }
+
+export async function getOrders(params?: { page?: number; pageSize?: number; status?: string; channel?: string }) {
+  const res = await Taro.request({
+    url: `${getApiBaseUrl()}/orders`,
+    method: 'GET',
+    data: params || {},
+  })
+  const data = res.data as any
+  if (data && data.error) throw new Error(data.error.message || 'Orders error')
+  return data
+}

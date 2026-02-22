@@ -1,0 +1,53 @@
+@use '../../styles/variables' as *;
+
+.faq-page {
+  min-height: 100vh;
+  background-color: $bg-body;
+  padding: $spacing-md;
+}
+
+.section-card {
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-main;
+  margin-bottom: $spacing-sm;
+}
+
+.faq-item {
+  padding: $spacing-sm 0;
+  border-bottom: 1px solid $bg-body;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.q-text {
+  font-size: 14px;
+  color: $text-main;
+}
+
+.q-icon {
+  font-size: 16px;
+  color: $text-secondary;
+}
+
+.faq-answer {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: $text-secondary;
+  line-height: 1.6;
+}

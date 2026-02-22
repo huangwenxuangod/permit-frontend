@@ -12,6 +12,9 @@ export default function PreviewPage() {
   const [processedUrls, setProcessedUrls] = useState<Record<string, string>>({})
   const [baselineUrl, setBaselineUrl] = useState<string>('')
   const [layoutUrls, setLayoutUrls] = useState<Record<string, string>>({})
+  const [beautyOn, setBeautyOn] = useState(false)
+  const [enhanceOn, setEnhanceOn] = useState(false)
+  const [outfitStyle, setOutfitStyle] = useState('')
   const layoutLoadingRef = useRef(false)
 
   useEffect(() => {
@@ -51,6 +54,33 @@ export default function PreviewPage() {
 
   const handleNext = () => {
     Taro.navigateTo({ url: '/pages/order-confirm/index' })
+  }
+
+  const handleToggleBeauty = () => {
+    const next = !beautyOn
+    setBeautyOn(next)
+    Taro.showToast({ title: next ? '美颜已开启（预览）' : '美颜已关闭', icon: 'none' })
+  }
+
+  const handleToggleEnhance = () => {
+    const next = !enhanceOn
+    setEnhanceOn(next)
+    Taro.showToast({ title: next ? '增强已开启（预览）' : '增强已关闭', icon: 'none' })
+  }
+
+  const handleOutfit = async () => {
+    try {
+      const res = await Taro.showActionSheet({ itemList: ['证件正装', '职业装', '不更换'] })
+      const map = ['证件正装', '职业装', '不更换']
+      const selected = map[res.tapIndex]
+      if (selected === '不更换') {
+        setOutfitStyle('')
+        Taro.showToast({ title: '已恢复原始穿着', icon: 'none' })
+        return
+      }
+      setOutfitStyle(selected)
+      Taro.showToast({ title: `已选择${selected}（预览）`, icon: 'none' })
+    } catch {}
   }
 
   return (
@@ -99,9 +129,11 @@ export default function PreviewPage() {
         <View className='tool-row'>
           <Text className='tool-label'>工具：</Text>
           <View className='tool-btns'>
-            <View className='tool-btn'>换装</View>
-            <View className='tool-btn'>美颜</View>
-            <View className='tool-btn'>增强</View>
+            <View className={`tool-btn ${outfitStyle ? 'active' : ''}`} onClick={handleOutfit}>
+              {outfitStyle ? `换装·${outfitStyle}` : '换装'}
+            </View>
+            <View className={`tool-btn ${beautyOn ? 'active' : ''}`} onClick={handleToggleBeauty}>美颜</View>
+            <View className={`tool-btn ${enhanceOn ? 'active' : ''}`} onClick={handleToggleEnhance}>增强</View>
           </View>
         </View>
       </View>

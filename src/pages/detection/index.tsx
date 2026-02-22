@@ -9,14 +9,26 @@ export default function DetectionPage() {
   const [previewImage, setPreviewImage] = useState('')
   const [statusText, setStatusText] = useState('正在上传并生成证件照')
   const canceledRef = useRef(false)
-  const timerRef = useRef<any>(null)
+  const failureTimerRef = useRef<any>(null)
+  const successTimerRef = useRef<any>(null)
+  const clearTimers = () => {
+    if (failureTimerRef.current) {
+      clearTimeout(failureTimerRef.current)
+      failureTimerRef.current = null
+    }
+    if (successTimerRef.current) {
+      clearTimeout(successTimerRef.current)
+      successTimerRef.current = null
+    }
+  }
   const handleFailure = (message: string, error?: unknown) => {
     if (canceledRef.current) return
     if (error) {
       console.log('failure:', message, error)
     }
     Taro.showToast({ title: message, icon: 'none' })
-    setTimeout(() => {
+    clearTimers()
+    failureTimerRef.current = setTimeout(() => {
       if (!canceledRef.current) {
         Taro.navigateBack()
       }
@@ -74,7 +86,8 @@ export default function DetectionPage() {
           if (baselineUrl) Taro.setStorageSync('baselineUrl', baselineUrl)
           if (processedUrls) Taro.setStorageSync('processedUrls', processedUrls)
           setStatusText('生成成功，正在跳转')
-          setTimeout(() => {
+          clearTimers()
+          successTimerRef.current = setTimeout(() => {
             if (!canceledRef.current) {
               Taro.navigateTo({ url: '/pages/preview/index' })
             }
@@ -87,17 +100,17 @@ export default function DetectionPage() {
     run()
     return () => {
       canceledRef.current = true
-      timerRef.current = null
+      clearTimers()
     }
   }, [])
 
   useDidHide(() => {
     canceledRef.current = true
-    timerRef.current = null
+    clearTimers()
   })
   useUnload(() => {
     canceledRef.current = true
-    timerRef.current = null
+    clearTimers()
   })
 
   return (

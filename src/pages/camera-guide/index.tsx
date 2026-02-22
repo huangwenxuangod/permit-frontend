@@ -1,15 +1,44 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Button, Image } from '@tarojs/components'
 import { useRouter } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import './index.scss'
 import { images } from '../../assets/images'
+import { getSpecs } from '../../services/api'
 
 export default function CameraGuidePage() {
   const router = useRouter()
   const { spec } = router.params
   const specName = spec || '证件照'
   Taro.setStorageSync('selectedSpecCode', spec || '')
+  const [specDetail, setSpecDetail] = useState<{ code?: string; name?: string; widthPx?: number; heightPx?: number; dpi?: number }>({
+    name: specName,
+    widthPx: 390,
+    heightPx: 567,
+    dpi: 300
+  })
+
+  useEffect(() => {
+    const cached = Taro.getStorageSync('selectedSpecDetail') as any
+    if (cached && (cached.code === spec || cached.name === spec || !spec)) {
+      setSpecDetail(cached)
+      return
+    }
+    const run = async () => {
+      try {
+        const list = await getSpecs()
+        if (Array.isArray(list)) {
+          const found = list.find((item: any) => item.code === spec || item.name === spec)
+          if (found) {
+            const next = { code: found.code, name: found.name, widthPx: found.widthPx, heightPx: found.heightPx, dpi: found.dpi }
+            setSpecDetail(next)
+            Taro.setStorageSync('selectedSpecDetail', next)
+          }
+        }
+      } catch {}
+    }
+    run()
+  }, [spec])
 
   const getFileSize = async (path: string) => {
     try {
@@ -79,7 +108,7 @@ export default function CameraGuidePage() {
   return (
     <View className='camera-guide-page'>
       <View className='header'>
-        <Text className='spec-name'>{specName}</Text>
+        <Text className='spec-name'>{specDetail.name || specName}</Text>
         <Text className='spec-tag'>认证回执</Text>
       </View>
 
@@ -104,8 +133,8 @@ export default function CameraGuidePage() {
 
       <View className='spec-details'>
         <Text>冲印尺寸：33x48mm</Text>
-        <Text>像素尺寸：390x567px</Text>
-        <Text>分辨率：300DPI</Text>
+        <Text>像素尺寸：{specDetail.widthPx || 390}x{specDetail.heightPx || 567}px</Text>
+        <Text>分辨率：{specDetail.dpi || 300}DPI</Text>
       </View>
 
       <View className='action-buttons'>

@@ -1,0 +1,68 @@
+@use '../../styles/variables' as *;
+
+.settings-page {
+  min-height: 100vh;
+  background-color: $bg-body;
+  padding: $spacing-md;
+}
+
+.section-card {
+  background-color: $bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-main;
+  margin-bottom: $spacing-sm;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+  border-bottom: 1px solid $bg-body;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  font-size: 14px;
+  color: $text-main;
+}
+
+.danger-btn {
+  background-color: #ef4444;
+  color: #fff;
+  border-radius: $radius-full;
+  height: 44px;
+  line-height: 44px;
+  font-size: 14px;
+}
+
+.danger-btn::after {
+  border: none;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.info-label {
+  font-size: 13px;
+  color: $text-secondary;
+}
+
+.info-value {
+  font-size: 13px;
+  color: $text-main;
+}
