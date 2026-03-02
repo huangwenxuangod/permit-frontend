@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react'
 import { View, Text, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useEffect, useState } from 'react'
 import { api, Spec, Task } from '../../services/api'
 import './index.scss'
 
@@ -10,6 +10,7 @@ export default function OrderConfirm() {
   const [city, setCity] = useState('')
   const [remark, setRemark] = useState('')
   const [amountCents] = useState(990)
+  const [paying, setPaying] = useState(false)
 
   useEffect(() => {
     const storedSpec = Taro.getStorageSync('selectedSpec') as Spec | undefined
@@ -19,6 +20,7 @@ export default function OrderConfirm() {
   }, [])
 
   const handlePay = async () => {
+    if (paying) return
     if (!task?.id) {
       Taro.showToast({ title: '缺少任务信息', icon: 'none' })
       return
@@ -28,7 +30,8 @@ export default function OrderConfirm() {
       return
     }
     try {
-      await api.createOrder({
+      setPaying(true)
+      const order = await api.createOrder({
         taskId: task.id,
         items: [{ type: 'print', qty: 1 }],
         city,
@@ -36,10 +39,34 @@ export default function OrderConfirm() {
         amountCents,
         channel: 'wechat'
       })
-      Taro.showToast({ title: '下单成功', icon: 'success' })
+      const orderId = order.id
+      if (!orderId) {
+        Taro.showToast({ title: '订单创建失败', icon: 'none' })
+        return
+      }
+      Taro.setStorageSync('latestOrderId', orderId)
+      const payResult = await api.payWechat(orderId)
+      const payParams = payResult.payParams
+      await Taro.requestPayment({
+        timeStamp: payParams.timeStamp,
+        nonceStr: payParams.nonceStr,
+        package: payParams.package,
+        signType: payParams.signType as 'RSA' | 'MD5',
+        paySign: payParams.paySign
+      })
+      const downloadInfo = await api.getDownloadInfo(task.id)
+      Taro.setStorageSync('downloadUrls', downloadInfo.urls)
+      const downloadToken = await api.createDownloadToken(task.id)
+      const baseUrl = process.env.TARO_APP_BASE_URL || ''
+      await Taro.downloadFile({
+        url: `${baseUrl}/api/download/file?token=${downloadToken.token}`
+      })
+      Taro.showToast({ title: '支付成功', icon: 'success' })
       Taro.switchTab({ url: '/pages/orders/index' })
     } catch (error) {
-      Taro.showToast({ title: '下单失败，请重试', icon: 'none' })
+      Taro.showToast({ title: '支付失败，请重试', icon: 'none' })
+    } finally {
+      setPaying(false)
     }
   }
 

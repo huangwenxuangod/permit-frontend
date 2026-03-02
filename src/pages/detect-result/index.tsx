@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react'
 import { View, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useEffect, useState } from 'react'
 import './index.scss'
 
 export default function DetectResult() {

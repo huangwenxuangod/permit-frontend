@@ -1,5 +1,5 @@
+import React, { useEffect, useState } from 'react'
 import { View, Text, Image } from '@tarojs/components'
-import { useEffect, useState } from 'react'
 import { icons } from '../../assets/icons'
 import { api } from '../../services/api'
 import './index.scss'

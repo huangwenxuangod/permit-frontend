@@ -1,6 +1,6 @@
+import React, { useState } from 'react'
 import { View, Text, Camera } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useState } from 'react'
 import { api, Spec } from '../../services/api'
 import './index.scss'
 

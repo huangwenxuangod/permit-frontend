@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useEffect, useState } from 'react'
 import { images } from '../../assets/images'
 import { api, Spec } from '../../services/api'
 import './index.scss'

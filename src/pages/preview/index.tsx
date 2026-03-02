@@ -1,7 +1,7 @@
+import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { useEffect, useMemo, useState } from 'react'
-import { api, Task } from '../../services/api'
+import { api, Spec, Task } from '../../services/api'
 import './index.scss'
 
 const tools = ['背景', '换装', '美颜', '增强']
@@ -14,7 +14,9 @@ const colorMap: Record<string, string> = {
 export default function Preview() {
   const [task, setTask] = useState<Task | null>(null)
   const [activeColor, setActiveColor] = useState('white')
+  const [activeTab, setActiveTab] = useState<'single' | 'layout'>('single')
   const [photoUrl, setPhotoUrl] = useState('')
+  const [layoutUrl, setLayoutUrl] = useState('')
 
   const handleNext = () => {
     Taro.navigateTo({ url: '/pages/order-confirm/index' })
@@ -57,7 +59,7 @@ export default function Preview() {
       return
     }
     try {
-      const result = await api.addBackground(task.id, color, task.spec?.dpi || task.dpi)
+      const result = await api.addBackground(task.id, color, task.spec?.dpi)
       const nextTask = {
         ...task,
         processedUrls: {
@@ -73,6 +75,43 @@ export default function Preview() {
     }
   }
 
+  const ensureLayout = async (color: string) => {
+    if (!task) return
+    const spec = task.spec || (Taro.getStorageSync('selectedSpec') as Spec | undefined)
+    if (!spec) return
+    const existingLayout = task.layoutUrls?.[color]
+    if (existingLayout) {
+      setLayoutUrl(existingLayout)
+      return
+    }
+    try {
+      const result = await api.createLayout(task.id, {
+        color,
+        widthPx: spec.widthPx,
+        heightPx: spec.heightPx,
+        dpi: spec.dpi,
+        kb: 200
+      })
+      const nextTask = {
+        ...task,
+        layoutUrls: {
+          ...(task.layoutUrls || {}),
+          [color]: result.url
+        }
+      }
+      setTask(nextTask)
+      setLayoutUrl(result.url)
+      Taro.setStorageSync('task', nextTask)
+    } catch (error) {
+      Taro.showToast({ title: '排版生成失败，请重试', icon: 'none' })
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab !== 'layout') return
+    ensureLayout(activeColor)
+  }, [activeTab, activeColor, task?.id])
+
   return (
     <View className='preview'>
       <View className='preview-header'>
@@ -82,15 +121,33 @@ export default function Preview() {
       </View>
 
       <View className='preview-tabs'>
-        <Text className='preview-tab active'>单张照预览</Text>
-        <Text className='preview-tab'>排版照预览</Text>
+        <Text
+          className={`preview-tab ${activeTab === 'single' ? 'active' : ''}`}
+          onClick={() => setActiveTab('single')}
+        >
+          单张照预览
+        </Text>
+        <Text
+          className={`preview-tab ${activeTab === 'layout' ? 'active' : ''}`}
+          onClick={() => setActiveTab('layout')}
+        >
+          排版照预览
+        </Text>
       </View>
 
       <View className='preview-photo'>
-        {photoUrl ? (
-          <Image className='preview-image' src={photoUrl} mode='aspectFit' />
+        {activeTab === 'layout' ? (
+          layoutUrl ? (
+            <Image className='preview-layout-image' src={layoutUrl} mode='aspectFit' />
+          ) : (
+            <View className='preview-layout-frame' />
+          )
         ) : (
-          <View className='preview-frame' />
+          photoUrl ? (
+            <Image className='preview-image' src={photoUrl} mode='aspectFit' />
+          ) : (
+            <View className='preview-frame' />
+          )
         )}
         <View className='preview-badge'>预览图</View>
       </View>

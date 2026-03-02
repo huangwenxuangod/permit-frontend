@@ -40,6 +40,21 @@ export type Order = {
   createdAt?: string
 }
 
+export type PayParams = {
+  appId: string
+  timeStamp: string
+  nonceStr: string
+  package: string
+  signType: string
+  paySign: string
+}
+
+export type LoginResponse = {
+  token: string
+  userId: string
+  openid: string
+}
+
 type RequestOptions = {
   url: string
   method?: 'GET' | 'POST'
@@ -76,6 +91,14 @@ const getSpecs = (query?: string) => {
     url: '/api/specs',
     method: 'GET',
     data: query ? { q: query } : undefined
+  })
+}
+
+const login = (code: string) => {
+  return request<LoginResponse>({
+    url: '/api/login',
+    method: 'POST',
+    data: { code }
   })
 }
 
@@ -125,6 +148,14 @@ const addBackground = (id: string, color: string, dpi?: number) => {
   })
 }
 
+const createLayout = (id: string, payload: { color: string; widthPx: number; heightPx: number; dpi: number; kb?: number }) => {
+  return request<{ taskId: string; layout: string; url: string; status: string }>({
+    url: `/api/tasks/${id}/layout`,
+    method: 'POST',
+    data: payload
+  })
+}
+
 const createOrder = (payload: {
   taskId: string
   items: Array<{ type: string; qty: number }>
@@ -148,6 +179,29 @@ const getOrders = (page = 1, pageSize = 20) => {
   })
 }
 
+const getDownloadInfo = (taskId: string) => {
+  return request<{ taskId: string; urls: Record<string, string>; expiresIn: number }>({
+    url: `/api/download/${taskId}`,
+    method: 'GET'
+  })
+}
+
+const createDownloadToken = (taskId: string, ttlSeconds = 600) => {
+  return request<{ token: string; expiresAt: string }>({
+    url: '/api/download/token',
+    method: 'POST',
+    data: { taskId, ttlSeconds }
+  })
+}
+
+const payWechat = (orderId: string, openid?: string) => {
+  return request<{ orderId: string; payParams: PayParams }>({
+    url: '/api/pay/wechat',
+    method: 'POST',
+    data: openid ? { orderId, openid } : { orderId }
+  })
+}
+
 const getMe = () => {
   return request<{ userId: string; openid: string; nickname: string; avatar: string }>({
     url: '/api/me',
@@ -156,12 +210,17 @@ const getMe = () => {
 }
 
 export const api = {
+  login,
   getSpecs,
   uploadFile,
   createTask,
   getTask,
   addBackground,
+  createLayout,
   createOrder,
   getOrders,
+  getDownloadInfo,
+  createDownloadToken,
+  payWechat,
   getMe
 }
