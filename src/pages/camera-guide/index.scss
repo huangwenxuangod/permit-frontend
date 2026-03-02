@@ -1,0 +1,111 @@
+.guide {
+  padding: 16px 16px 88px;
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.guide-back {
+  font-size: 12px;
+  color: #16a34a;
+}
+
+.guide-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.guide-space {
+  width: 40px;
+}
+
+.guide-spec {
+  font-size: 13px;
+  color: #16a34a;
+  margin-bottom: 12px;
+}
+
+.guide-hero {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.guide-hero-image {
+  width: 260px;
+  height: 240px;
+}
+
+.guide-tips {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.guide-metrics {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 16px;
+}
+
+.guide-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.guide-metric-label {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.guide-metric-value {
+  font-size: 12px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.guide-actions {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.guide-btn {
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.guide-btn.ghost {
+  border: 1px solid #cbd5f5;
+  color: #334155;
+  background: #ffffff;
+}
+
+.guide-btn.primary {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 12px 20px rgba(22, 163, 74, 0.25);
+}
