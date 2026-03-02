@@ -1,7 +1,9 @@
 import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { useEffect, useMemo, useState } from 'react'
 import { icons } from '../../assets/icons'
 import { images } from '../../assets/images'
+import { api, Spec } from '../../services/api'
 import './index.scss'
 
 const quickActions = [
@@ -16,19 +18,23 @@ const featureActions = [
   { title: '改大小', icon: icons.edit }
 ]
 
-const hotSpecs = [
-  { name: '港澳通行证', size: '390x567px', tag: '合回执' },
-  { name: '身份证', size: '358x441px', tag: '合回执' },
-  { name: '护照', size: '390x567px', tag: '合回执' },
-  { name: '社保证', size: '358x441px', tag: '合回执' },
-  { name: '驾驶证', size: '260x378px', tag: '合回执' },
-  { name: '保安证', size: '358x441px', tag: '合回执' }
-]
-
 export default function Index() {
+  const [specs, setSpecs] = useState<Spec[]>([])
+
   const handleToSearch = () => {
     Taro.navigateTo({ url: '/pages/search/index' })
   }
+
+  const handleSpecSelect = (spec: Spec) => {
+    Taro.setStorageSync('selectedSpec', spec)
+    Taro.navigateTo({ url: '/pages/camera-guide/index' })
+  }
+
+  useEffect(() => {
+    api.getSpecs().then(setSpecs).catch(() => setSpecs([]))
+  }, [])
+
+  const hotSpecs = useMemo(() => specs.slice(0, 6), [specs])
 
   return (
     <View className='home'>
@@ -68,16 +74,16 @@ export default function Index() {
         </View>
         <View className='home-spec-grid'>
           {hotSpecs.map(spec => (
-            <View key={spec.name} className='home-spec-card' onClick={handleToSearch}>
+            <View key={spec.code} className='home-spec-card' onClick={() => handleSpecSelect(spec)}>
               <View className='home-spec-row'>
                 <Text className='home-spec-name'>{spec.name}</Text>
                 <View className='home-spec-tag'>
-                  <Text className='home-spec-tag-text'>{spec.tag}</Text>
+                  <Text className='home-spec-tag-text'>{spec.bgColors?.length ? '合回执' : '电子照'}</Text>
                 </View>
               </View>
-              <Text className='home-spec-size'>像素尺寸：{spec.size}</Text>
+              <Text className='home-spec-size'>像素尺寸：{spec.widthPx}x{spec.heightPx}px</Text>
               <View className='home-spec-chip'>
-                <Text className='home-spec-chip-text'>电子照</Text>
+                <Text className='home-spec-chip-text'>{spec.dpi} DPI</Text>
               </View>
             </View>
           ))}

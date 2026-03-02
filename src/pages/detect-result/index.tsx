@@ -1,8 +1,11 @@
 import { View, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { useEffect, useState } from 'react'
 import './index.scss'
 
 export default function DetectResult() {
+  const [errorMsg, setErrorMsg] = useState('检测未通过')
+
   const handleRetry = () => {
     Taro.navigateTo({ url: '/pages/camera/index' })
   }
@@ -10,6 +13,13 @@ export default function DetectResult() {
   const handlePreview = () => {
     Taro.navigateTo({ url: '/pages/preview/index' })
   }
+
+  useEffect(() => {
+    const stored = Taro.getStorageSync('taskError') as string | undefined
+    if (stored) {
+      setErrorMsg(stored)
+    }
+  }, [])
 
   return (
     <View className='result'>
@@ -22,8 +32,8 @@ export default function DetectResult() {
       <View className='result-card'>
         <View className='result-thumb' />
         <View className='result-info'>
-          <Text className='result-info-title'>有 1 项检测不通过</Text>
-          <Text className='result-info-desc'>距离镜头过近</Text>
+          <Text className='result-info-title'>检测未通过</Text>
+          <Text className='result-info-desc'>{errorMsg}</Text>
         </View>
       </View>
 

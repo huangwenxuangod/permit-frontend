@@ -1,12 +1,31 @@
 import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { useEffect, useState } from 'react'
 import { images } from '../../assets/images'
+import { api, Spec } from '../../services/api'
 import './index.scss'
 
 export default function CameraGuide() {
-  const handlePick = () => {
+  const [spec, setSpec] = useState<Spec | null>(null)
+
+  const handlePick = (mode: 'album' | 'camera') => {
+    Taro.setStorageSync('captureMode', mode)
     Taro.navigateTo({ url: '/pages/camera/index' })
   }
+
+  useEffect(() => {
+    const stored = Taro.getStorageSync('selectedSpec') as Spec | undefined
+    if (stored?.code) {
+      setSpec(stored)
+      return
+    }
+    api.getSpecs().then(list => {
+      if (list.length > 0) {
+        setSpec(list[0])
+        Taro.setStorageSync('selectedSpec', list[0])
+      }
+    }).catch(() => setSpec(null))
+  }, [])
 
   return (
     <View className='guide'>
@@ -16,7 +35,7 @@ export default function CameraGuide() {
         <View className='guide-space' />
       </View>
 
-      <Text className='guide-spec'>居住证 · 认证回执</Text>
+      <Text className='guide-spec'>{spec ? `${spec.name} · ${spec.code}` : '加载规格中'}</Text>
 
       <View className='guide-hero'>
         <Image className='guide-hero-image' src={images.guideIllustration} mode='aspectFit' />
@@ -30,22 +49,22 @@ export default function CameraGuide() {
 
       <View className='guide-metrics'>
         <View className='guide-metric'>
-          <Text className='guide-metric-label'>冲印尺寸</Text>
-          <Text className='guide-metric-value'>26x32mm</Text>
+          <Text className='guide-metric-label'>规格代码</Text>
+          <Text className='guide-metric-value'>{spec?.code || '-'}</Text>
         </View>
         <View className='guide-metric'>
           <Text className='guide-metric-label'>像素尺寸</Text>
-          <Text className='guide-metric-value'>358x441px</Text>
+          <Text className='guide-metric-value'>{spec ? `${spec.widthPx}x${spec.heightPx}px` : '-'}</Text>
         </View>
         <View className='guide-metric'>
           <Text className='guide-metric-label'>分辨率</Text>
-          <Text className='guide-metric-value'>300DPI</Text>
+          <Text className='guide-metric-value'>{spec ? `${spec.dpi}DPI` : '-'}</Text>
         </View>
       </View>
 
       <View className='guide-actions'>
-        <View className='guide-btn ghost' onClick={handlePick}>相册选取</View>
-        <View className='guide-btn primary' onClick={handlePick}>现在拍摄</View>
+        <View className='guide-btn ghost' onClick={() => handlePick('album')}>相册选取</View>
+        <View className='guide-btn primary' onClick={() => handlePick('camera')}>现在拍摄</View>
       </View>
     </View>
   )
