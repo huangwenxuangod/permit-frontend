@@ -23,13 +23,28 @@ export default function CameraPage() {
       })
       const filePath = chooseResult.tempFilePaths[0]
       const objectKey = await api.uploadFile(filePath)
+      if (!objectKey) {
+        Taro.showToast({ title: '上传失败，请重试', icon: 'none' })
+        return
+      }
       let spec = Taro.getStorageSync('selectedSpec') as Spec | undefined
-      if (!spec?.code) {
+      if (!spec?.code || !spec.itemId) {
+        console.log('[page:camera] loadSpecs')
         const specs = await api.getSpecs()
-        spec = specs[0]
+        const validSpecs = specs.filter(item => !!item.itemId)
+        if (spec?.code) {
+          spec = validSpecs.find(item => item.code === spec?.code)
+        }
+        if (!spec) {
+          spec = validSpecs[0]
+        }
         if (spec) {
           Taro.setStorageSync('selectedSpec', spec)
         }
+      }
+      if (!spec?.code || !spec.itemId) {
+        Taro.showToast({ title: '当前规格暂不支持，请重新选择', icon: 'none' })
+        return
       }
       const colors = spec?.bgColors?.length ? spec.bgColors : ['white']
       const task = await api.createTask({

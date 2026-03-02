@@ -20,6 +20,7 @@ export default function Search() {
   }
 
   const loadSpecs = (query?: string) => {
+    console.log('[page:search] loadSpecs', { query })
     api.getSpecs(query).then(setSpecs).catch(() => setSpecs([]))
   }
 

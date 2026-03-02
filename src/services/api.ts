@@ -62,34 +62,124 @@ type RequestOptions = {
   header?: Record<string, string>
 }
 
-const getBaseUrl = () => process.env.TARO_APP_BASE_URL || ''
+const getBaseUrl = () => 	'https://huangwenxuangod.xyz'
 
 const getAuthHeader = () => {
   const token = Taro.getStorageSync('token')
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-const request = async <T,>({ url, method = 'GET', data, header }: RequestOptions) => {
-  const fullUrl = `${getBaseUrl()}${url}`
-  console.log('[api] request', { url: fullUrl, method, data })
-  const response = await Taro.request<T>({
-    url: fullUrl,
-    method,
-    data,
-    header: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(),
-      ...header
-    }
-  })
-  console.log('[api] response', { url: fullUrl, statusCode: response.statusCode, data: response.data })
-  if (response.statusCode >= 200 && response.statusCode < 300) {
-    return response.data
+let authPromise: Promise<void> | null = null
+
+const ensureAuth = async () => {
+  const token = Taro.getStorageSync('token')
+  if (token) {
+    console.log('[api] ensureAuth: token exists')
+    return
   }
-  throw new Error(`Request failed: ${response.statusCode}`)
+  console.log('[api] ensureAuth: start')
+  if (authPromise) return authPromise
+  authPromise = new Promise<void>((resolve, reject) => {
+    Taro.login({
+      success: async (result) => {
+        if (!result.code) {
+          console.error('[api] ensureAuth: login code missing')
+          reject(new Error('Login code missing'))
+          return
+        }
+        try {
+          const response = await Taro.request<LoginResponse>({
+            url: `${getBaseUrl()}/api/login`,
+            method: 'POST',
+            data: { code: result.code },
+            header: { 'Content-Type': 'application/json' }
+          })
+          console.log('[api] ensureAuth: login response', { statusCode: response.statusCode })
+          if (response.statusCode >= 200 && response.statusCode < 300) {
+            const data = response.data
+            Taro.setStorageSync('token', data.token)
+            Taro.setStorageSync('userId', data.userId)
+            Taro.setStorageSync('openid', data.openid)
+            console.log('[api] ensureAuth: token stored')
+            resolve()
+            return
+          }
+          reject(new Error(`Login failed: ${response.statusCode}`))
+        } catch (error) {
+          console.error('[api] ensureAuth: request error', { error: String(error) })
+          reject(error)
+        }
+      },
+      fail: (error) => {
+        console.error('[api] ensureAuth: login fail', { error: String(error) })
+        reject(error)
+      }
+    })
+  }).finally(() => {
+    authPromise = null
+  })
+  return authPromise
+}
+
+const request = async <T,>({ url, method = 'GET', data, header }: RequestOptions) => {
+  const baseUrl = getBaseUrl()
+  const fullUrl = `${baseUrl}${url}`
+  console.log('[api] request', { url: fullUrl, method, data, baseUrl })
+  if (!baseUrl) {
+    console.log('[api] baseUrl empty')
+  }
+  try {
+    if (url !== '/api/login') {
+      await ensureAuth()
+    }
+    const hasToken = !!Taro.getStorageSync('token')
+    if (!hasToken && url !== '/api/login') {
+      console.error('[api] request blocked: token missing')
+      throw new Error('Token missing after login')
+    }
+    const response = await Taro.request<T>({
+      url: fullUrl,
+      method,
+      data,
+      header: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
+        ...header
+      }
+    })
+    console.log('[api] response', { url: fullUrl, statusCode: response.statusCode, data: response.data })
+    if (response.statusCode === 401 && url !== '/api/login') {
+      console.error('[api] response unauthorized, retry login')
+      Taro.removeStorageSync('token')
+      await ensureAuth()
+      const retryResponse = await Taro.request<T>({
+        url: fullUrl,
+        method,
+        data,
+        header: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+          ...header
+        }
+      })
+      console.log('[api] response retry', { url: fullUrl, statusCode: retryResponse.statusCode, data: retryResponse.data })
+      if (retryResponse.statusCode >= 200 && retryResponse.statusCode < 300) {
+        return retryResponse.data
+      }
+      throw new Error(`Request failed: ${retryResponse.statusCode}`)
+    }
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response.data
+    }
+    throw new Error(`Request failed: ${response.statusCode}`)
+  } catch (error) {
+    console.error('[api] request error', { url: fullUrl, method, data, error: String(error) })
+    throw error
+  }
 }
 
 const getSpecs = (query?: string) => {
+  console.log('[api] getSpecs', { query })
   return request<Spec[]>({
     url: '/api/specs',
     method: 'GET',
@@ -108,13 +198,36 @@ const login = (code: string) => {
 const uploadFile = async (filePath: string) => {
   const url = `${getBaseUrl()}/api/upload`
   console.log('[api] upload request', { url, filePath })
-  const response = await Taro.uploadFile({
+  const ensureToken = async () => {
+    await ensureAuth()
+    const hasToken = !!Taro.getStorageSync('token')
+    if (!hasToken) {
+      throw new Error('Token missing after login')
+    }
+  }
+  const doUpload = () => Taro.uploadFile({
     url,
     name: 'file',
-    filePath
+    filePath,
+    header: {
+      ...getAuthHeader()
+    }
   })
-  const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+  await ensureToken()
+  let response = await doUpload()
+  let data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
   console.log('[api] upload response', { url, statusCode: response.statusCode, data })
+  if (response.statusCode === 401) {
+    console.error('[api] upload unauthorized, retry login')
+    Taro.removeStorageSync('token')
+    await ensureToken()
+    response = await doUpload()
+    data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+    console.log('[api] upload response retry', { url, statusCode: response.statusCode, data })
+  }
+  if (response.statusCode < 200 || response.statusCode >= 300) {
+    throw new Error(`Upload failed: ${response.statusCode}`)
+  }
   return data.objectKey as string
 }
 

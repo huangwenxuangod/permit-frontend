@@ -15,14 +15,18 @@ export default function CameraGuide() {
 
   useEffect(() => {
     const stored = Taro.getStorageSync('selectedSpec') as Spec | undefined
-    if (stored?.code) {
+    if (stored?.code && stored.itemId) {
       setSpec(stored)
       return
     }
+    console.log('[page:camera-guide] loadSpecs')
     api.getSpecs().then(list => {
-      if (list.length > 0) {
-        setSpec(list[0])
-        Taro.setStorageSync('selectedSpec', list[0])
+      const validSpecs = list.filter(item => !!item.itemId)
+      if (validSpecs.length > 0) {
+        const nextSpec = stored?.code ? validSpecs.find(item => item.code === stored.code) : validSpecs[0]
+        const selected = nextSpec || validSpecs[0]
+        setSpec(selected)
+        Taro.setStorageSync('selectedSpec', selected)
       }
     }).catch(() => setSpec(null))
   }, [])
