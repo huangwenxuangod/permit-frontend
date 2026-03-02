@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useEffect } from 'react'
+import React from '@tarojs/react'
+import { PropsWithChildren,useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { api } from './services/api'
 import './app.scss'

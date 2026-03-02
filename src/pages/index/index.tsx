@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from '@tarojs/react'
+import { useMemo, useState } from 'react'
 import { View, Text, Image } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { icons } from '../../assets/icons'
 import { images } from '../../assets/images'
 import { api, Spec } from '../../services/api'
@@ -20,6 +21,9 @@ const featureActions = [
 
 export default function Index() {
   const [specs, setSpecs] = useState<Spec[]>([])
+  const loadSpecs = () => {
+    api.getSpecs().then(setSpecs).catch(() => setSpecs([]))
+  }
 
   const handleToSearch = () => {
     Taro.navigateTo({ url: '/pages/search/index' })
@@ -30,9 +34,9 @@ export default function Index() {
     Taro.navigateTo({ url: '/pages/camera-guide/index' })
   }
 
-  useEffect(() => {
-    api.getSpecs().then(setSpecs).catch(() => setSpecs([]))
-  }, [])
+  useDidShow(() => {
+    loadSpecs()
+  })
 
   const hotSpecs = useMemo(() => specs.slice(0, 6), [specs])
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from '@tarojs/react'
+import { useState,useEffect } from 'react'
 import { View, Text, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { api, Spec, Task } from '../../services/api'

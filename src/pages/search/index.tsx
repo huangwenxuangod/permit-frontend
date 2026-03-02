@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from '@tarojs/react'
+import { useMemo, useState } from 'react'
 import { View, Text, Input } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { api, Spec } from '../../services/api'
 import './index.scss'
 
@@ -23,9 +24,9 @@ export default function Search() {
     api.getSpecs(query).then(setSpecs).catch(() => setSpecs([]))
   }
 
-  useEffect(() => {
-    loadSpecs()
-  }, [])
+  useDidShow(() => {
+    loadSpecs(keyword)
+  })
 
   const filteredSpecs = useMemo(() => {
     const category = categories[activeIndex]

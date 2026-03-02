@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from '@tarojs/react'
+import { useEffect,useState } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import { icons } from '../../assets/icons'
 import { api } from '../../services/api'

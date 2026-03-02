@@ -70,8 +70,10 @@ const getAuthHeader = () => {
 }
 
 const request = async <T,>({ url, method = 'GET', data, header }: RequestOptions) => {
+  const fullUrl = `${getBaseUrl()}${url}`
+  console.log('[api] request', { url: fullUrl, method, data })
   const response = await Taro.request<T>({
-    url: `${getBaseUrl()}${url}`,
+    url: fullUrl,
     method,
     data,
     header: {
@@ -80,6 +82,7 @@ const request = async <T,>({ url, method = 'GET', data, header }: RequestOptions
       ...header
     }
   })
+  console.log('[api] response', { url: fullUrl, statusCode: response.statusCode, data: response.data })
   if (response.statusCode >= 200 && response.statusCode < 300) {
     return response.data
   }
