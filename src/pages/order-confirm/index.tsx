@@ -1,5 +1,4 @@
-import React from '@tarojs/react'
-import { useState,useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { api, Spec, Task } from '../../services/api'
@@ -59,9 +58,7 @@ export default function OrderConfirm() {
       Taro.setStorageSync('downloadUrls', downloadInfo.urls)
       const downloadToken = await api.createDownloadToken(task.id)
       const baseUrl = process.env.TARO_APP_BASE_URL || ''
-      await Taro.downloadFile({
-        url: `${baseUrl}/api/download/file?token=${downloadToken.token}`
-      })
+      await api.downloadFile(`${baseUrl}/api/download/file?token=${downloadToken.token}`)
       Taro.showToast({ title: '支付成功', icon: 'success' })
       Taro.switchTab({ url: '/pages/orders/index' })
     } catch (error) {

@@ -1,5 +1,4 @@
-import React from '@tarojs/react'
-import { PropsWithChildren,useEffect } from 'react'
+import React, { PropsWithChildren, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { api } from './services/api'
 import './app.scss'
@@ -24,8 +23,4 @@ function App({ children }: PropsWithChildren<any>) {
   }, [])
   return children
 }
-  
-
-void React
-
 export default App

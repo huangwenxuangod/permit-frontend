@@ -106,12 +106,15 @@ const login = (code: string) => {
 }
 
 const uploadFile = async (filePath: string) => {
+  const url = `${getBaseUrl()}/api/upload`
+  console.log('[api] upload request', { url, filePath })
   const response = await Taro.uploadFile({
-    url: `${getBaseUrl()}/api/upload`,
+    url,
     name: 'file',
     filePath
   })
   const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+  console.log('[api] upload response', { url, statusCode: response.statusCode, data })
   return data.objectKey as string
 }
 
@@ -212,6 +215,13 @@ const getMe = () => {
   })
 }
 
+const downloadFile = async (url: string) => {
+  console.log('[api] download request', { url })
+  const response = await Taro.downloadFile({ url })
+  console.log('[api] download response', { url, statusCode: response.statusCode, tempFilePath: response.tempFilePath })
+  return response
+}
+
 export const api = {
   login,
   getSpecs,
@@ -225,5 +235,6 @@ export const api = {
   getDownloadInfo,
   createDownloadToken,
   payWechat,
-  getMe
+  getMe,
+  downloadFile
 }

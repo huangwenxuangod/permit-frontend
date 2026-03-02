@@ -1,5 +1,4 @@
-import React from '@tarojs/react'
-import { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { icons } from '../../assets/icons'
@@ -37,6 +36,9 @@ export default function Index() {
   useDidShow(() => {
     loadSpecs()
   })
+  useEffect(() => {
+    loadSpecs()
+  }, [])
 
   const hotSpecs = useMemo(() => specs.slice(0, 6), [specs])
 
