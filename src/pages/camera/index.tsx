@@ -59,7 +59,7 @@ export default function CameraPage() {
         dpi: spec?.dpi,
         beauty: 0,
         enhance: 0,
-        watermark: false
+        watermark: true
       })
       Taro.setStorageSync('taskId', task.id)
       Taro.setStorageSync('task', task)

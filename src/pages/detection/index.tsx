@@ -15,9 +15,12 @@ export default function Detection() {
   const [checks, setChecks] = useState(initialChecks)
   const [statusText, setStatusText] = useState('证件照生成中，预计耗时 5 秒左右')
   const progressRef = useRef(0)
+  const navigatedRef = useRef(false)
 
   const handleFinish = () => {
-    Taro.navigateTo({ url: '/pages/preview/index' })
+    if (navigatedRef.current) return
+    navigatedRef.current = true
+    Taro.redirectTo({ url: '/pages/preview/index' })
   }
 
   useEffect(() => {
@@ -27,6 +30,7 @@ export default function Detection() {
       return
     }
     let running = true
+    let timer: ReturnType<typeof setInterval> | null = null
     const updateProgress = () => {
       progressRef.current = Math.min(progressRef.current + 1, initialChecks.length)
       setChecks(initialChecks.map((item, index) => ({
@@ -35,6 +39,7 @@ export default function Detection() {
       })))
     }
     const poll = async () => {
+      if (!running || navigatedRef.current) return
       try {
         const task = await api.getTask(taskId)
         Taro.setStorageSync('task', task)
@@ -42,14 +47,24 @@ export default function Detection() {
           setChecks(initialChecks.map(item => ({ ...item, done: true })))
           setStatusText('生成完成')
           if (running) {
-            Taro.navigateTo({ url: '/pages/preview/index' })
+            running = false
+            if (timer) clearInterval(timer)
+            if (!navigatedRef.current) {
+              navigatedRef.current = true
+              Taro.redirectTo({ url: '/pages/preview/index' })
+            }
           }
           return
         }
         if (task.status === 'failed' || task.errorMsg) {
           Taro.setStorageSync('taskError', task.errorMsg || '检测未通过')
           if (running) {
-            Taro.navigateTo({ url: '/pages/detect-result/index' })
+            running = false
+            if (timer) clearInterval(timer)
+            if (!navigatedRef.current) {
+              navigatedRef.current = true
+              Taro.redirectTo({ url: '/pages/detect-result/index' })
+            }
           }
           return
         }
@@ -59,10 +74,10 @@ export default function Detection() {
       }
     }
     poll()
-    const timer = setInterval(poll, 2000)
+    timer = setInterval(poll, 2000)
     return () => {
       running = false
-      clearInterval(timer)
+      if (timer) clearInterval(timer)
     }
   }, [])
 
