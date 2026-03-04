@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { View, Text, Input } from '@tarojs/components'
+import { View, Text, Input, Image } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { api, Spec } from '../../services/api'
+import { icons } from '../../assets/icons'
 import './index.scss'
 
 const categories = ['全部', '寸照', '回执', '签证', '考试']
@@ -40,7 +41,9 @@ export default function Search() {
   return (
     <View className='search'>
       <View className='search-header'>
-        <Text className='search-back' onClick={handleBack}>返回</Text>
+        <View className='search-back' onClick={handleBack}>
+          <Image className='search-back-icon' src={icons.arrowLeft} />
+        </View>
         <Text className='search-title'>搜索</Text>
         <View className='search-space' />
       </View>

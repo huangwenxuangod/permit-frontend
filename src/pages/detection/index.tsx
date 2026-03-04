@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { api } from '../../services/api'
+import { icons } from '../../assets/icons'
 import './index.scss'
 
 const initialChecks = [
@@ -81,31 +82,47 @@ export default function Detection() {
     }
   }, [])
 
+  const completedCount = checks.filter(item => item.done).length
+  const progressPercent = Math.round((completedCount / initialChecks.length) * 100)
+
   return (
     <View className='detection'>
       <View className='detection-header'>
-        <Text className='detection-back' onClick={() => Taro.navigateBack()}>返回</Text>
+        <View className='detection-back' onClick={() => Taro.navigateBack()}>
+          <Image className='detection-back-icon' src={icons.arrowLeft} />
+        </View>
         <Text className='detection-title'>检测相片</Text>
         <View className='detection-space' />
       </View>
 
-      <View className='detection-stage'>
-        <View className='detection-photo'>
-          <View className='detection-grid' />
-          <View className='detection-face' />
-          <View className='detection-scan' />
+      <View className='detection-stage-card'>
+        <View className='detection-stage'>
+          <View className='detection-photo'>
+            <View className='detection-grid' />
+            <View className='detection-face' />
+            <View className='detection-scan' />
+          </View>
         </View>
+        <View className='detection-progress'>
+          <View className='detection-progress-bar' style={{ width: `${progressPercent}%` }} />
+        </View>
+        <View className='detection-progress-row'>
+          <Text className='detection-status-title'>正在检测</Text>
+          <Text className='detection-progress-text'>{progressPercent}%</Text>
+        </View>
+        <Text className='detection-status'>{statusText}</Text>
       </View>
 
-      <Text className='detection-status'>{statusText}</Text>
-
-      <View className='detection-list'>
-        {checks.map(item => (
-          <View key={item.label} className='detection-item'>
-            <View className={`detection-dot ${item.done ? 'done' : ''}`} />
-            <Text className='detection-text'>{item.label}</Text>
-          </View>
-        ))}
+      <View className='detection-list-card'>
+        <Text className='detection-list-title'>检测项</Text>
+        <View className='detection-list'>
+          {checks.map(item => (
+            <View key={item.label} className='detection-item'>
+              <View className={`detection-dot ${item.done ? 'done' : ''}`} />
+              <Text className='detection-text'>{item.label}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       <View className='detection-footer'>

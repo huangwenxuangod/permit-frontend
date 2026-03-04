@@ -4,6 +4,8 @@ import Taro from '@tarojs/taro'
 import { api, Spec, Task } from '../../services/api'
 import './index.scss'
 
+const cityOptions = ['北京市', '上海市', '广州市', '深圳市', '杭州市', '成都市']
+
 export default function OrderConfirm() {
   const [spec, setSpec] = useState<Spec | null>(null)
   const [task, setTask] = useState<Task | null>(null)
@@ -11,6 +13,7 @@ export default function OrderConfirm() {
   const [remark, setRemark] = useState('')
   const [amountCents] = useState(990)
   const [paying, setPaying] = useState(false)
+  const [showCityPicker, setShowCityPicker] = useState(false)
 
   useEffect(() => {
     const storedSpec = Taro.getStorageSync('selectedSpec') as Spec | undefined
@@ -26,7 +29,7 @@ export default function OrderConfirm() {
       return
     }
     if (!city) {
-      Taro.showToast({ title: '请选择办理城市', icon: 'none' })
+      setShowCityPicker(true)
       return
     }
     try {
@@ -80,7 +83,7 @@ export default function OrderConfirm() {
           <View className='order-layout' />
         </View>
         <View className='order-info'>
-          <Text className='order-info-title'>{spec ? `${spec.name} · ${spec.code}` : '证件照'}</Text>
+          <Text className='order-info-title'>{spec ? spec.name : '证件照'}</Text>
           <Text className='order-info-sub'>回执 + 电子照</Text>
         </View>
         <View className='order-price'>
@@ -95,14 +98,13 @@ export default function OrderConfirm() {
       </View>
 
       <View className='order-form'>
-        <View className='order-field'>
+        <View className='order-field' onClick={() => setShowCityPicker(true)}>
           <Text className='order-label'>办理城市</Text>
-          <Input
-            className='order-input'
-            placeholder='请选择办理城市'
-            value={city}
-            onInput={event => setCity(event.detail.value)}
-          />
+          <View className='order-input order-input-select'>
+            <Text className={city ? 'order-input-text' : 'order-input-placeholder'}>
+              {city || '请选择办理城市'}
+            </Text>
+          </View>
         </View>
         <View className='order-field'>
           <Text className='order-label'>备注</Text>
@@ -119,6 +121,31 @@ export default function OrderConfirm() {
         <Text className='order-total'>合计 ¥{(amountCents / 100).toFixed(2)}</Text>
         <View className='order-pay' onClick={handlePay}>立即支付</View>
       </View>
+
+      {showCityPicker && (
+        <View className='order-city-mask' onClick={() => setShowCityPicker(false)}>
+          <View className='order-city-sheet' onClick={event => event.stopPropagation()}>
+            <View className='order-city-header'>
+              <Text className='order-city-title'>选择办理城市</Text>
+              <Text className='order-city-close' onClick={() => setShowCityPicker(false)}>关闭</Text>
+            </View>
+            <View className='order-city-grid'>
+              {cityOptions.map(item => (
+                <View
+                  key={item}
+                  className={`order-city-item ${city === item ? 'active' : ''}`}
+                  onClick={() => {
+                    setCity(item)
+                    setShowCityPicker(false)
+                  }}
+                >
+                  <Text>{item}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   )
 }

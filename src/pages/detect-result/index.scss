@@ -9,8 +9,19 @@
 }
 
 .result-back {
-  font-size: 12px;
-  color: #16a34a;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.08);
+}
+
+.result-back-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .result-title {
@@ -58,17 +69,17 @@
   color: #ef4444;
 }
 
-.result-tips {
+.result-section {
   margin-top: 16px;
   background: #f8fafc;
   border-radius: 16px;
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.result-tips-title {
+.result-section-title {
   font-size: 13px;
   font-weight: 600;
   color: #0f172a;
@@ -77,9 +88,31 @@
 .result-tip-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+}
+
+.result-tip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 12px;
   color: #475569;
+}
+
+.result-tip-index {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-tip-text {
+  flex: 1;
 }
 
 .result-actions {

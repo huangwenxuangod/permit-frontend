@@ -9,8 +9,19 @@
 }
 
 .detection-back {
-  font-size: 12px;
-  color: #16a34a;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.08);
+}
+
+.detection-back-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .detection-title {
@@ -23,8 +34,15 @@
   width: 40px;
 }
 
-.detection-stage {
+.detection-stage-card {
   margin-top: 20px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.08);
+}
+
+.detection-stage {
   display: flex;
   justify-content: center;
 }
@@ -67,16 +85,63 @@
   animation: scanMove 2.4s ease-in-out infinite;
 }
 
+.detection-progress {
+  margin-top: 14px;
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.detection-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+
+.detection-progress-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detection-status-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.detection-progress-text {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
 .detection-status {
-  margin-top: 16px;
+  margin-top: 8px;
   font-size: 13px;
   color: #0f172a;
   font-weight: 500;
-  text-align: center;
+}
+
+.detection-list-card {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+}
+
+.detection-list-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
 }
 
 .detection-list {
-  margin-top: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;

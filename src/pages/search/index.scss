@@ -10,8 +10,19 @@
 }
 
 .search-back {
-  font-size: 12px;
-  color: #16a34a;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.08);
+}
+
+.search-back-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .search-title {

@@ -55,6 +55,18 @@ export type LoginResponse = {
   openid: string
 }
 
+type FaceEnhanceResp = {
+  code: number
+  msg: string
+  data?: { image?: string }
+}
+
+type AIPhotoMakeResp = {
+  code: number
+  msg: string
+  data?: { estimated_time?: number; pic_id?: number }
+}
+
 type RequestOptions = {
   url: string
   method?: 'GET' | 'POST'
@@ -328,6 +340,29 @@ const getMe = () => {
   })
 }
 
+const faceEnhance = (payload: { imageBase64?: string; sourceObjectKey?: string; size?: string }) => {
+  return request<FaceEnhanceResp>({
+    url: '/api/zjz/face/enhance',
+    method: 'POST',
+    data: payload
+  })
+}
+
+const getAIPhotoTemplates = () => {
+  return request<any>({
+    url: '/api/zjz/ai-photo/templates',
+    method: 'POST'
+  })
+}
+
+const makeAIPhoto = (payload: { templateId: string; images?: string[]; sourceObjectKeys?: string[]; noticeUrl?: string }) => {
+  return request<AIPhotoMakeResp>({
+    url: '/api/zjz/ai-photo/make',
+    method: 'POST',
+    data: payload
+  })
+}
+
 const downloadFile = async (url: string) => {
   console.log('[api] download request', { url })
   const response = await Taro.downloadFile({ url })
@@ -349,5 +384,8 @@ export const api = {
   createDownloadToken,
   payWechat,
   getMe,
+  faceEnhance,
+  getAIPhotoTemplates,
+  makeAIPhoto,
   downloadFile
 }

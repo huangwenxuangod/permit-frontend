@@ -2,6 +2,7 @@ import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import React, { useEffect, useState } from 'react'
 import { images } from '../../assets/images'
+import { icons } from '../../assets/icons'
 import { api, Spec } from '../../services/api'
 import './index.scss'
 
@@ -34,12 +35,14 @@ export default function CameraGuide() {
   return (
     <View className='guide'>
       <View className='guide-header'>
-        <Text className='guide-back' onClick={() => Taro.navigateBack()}>返回</Text>
+        <View className='guide-back' onClick={() => Taro.navigateBack()}>
+          <Image className='guide-back-icon' src={icons.arrowLeft} />
+        </View>
         <Text className='guide-title'>拍摄指引</Text>
         <View className='guide-space' />
       </View>
 
-      <Text className='guide-spec'>{spec ? `${spec.name} · ${spec.code}` : '加载规格中'}</Text>
+      <Text className='guide-spec'>{spec ? spec.name : '加载规格中'}</Text>
 
       <View className='guide-hero'>
         <Image className='guide-hero-image' src={images.guideIllustration} mode='aspectFit' />
@@ -53,16 +56,12 @@ export default function CameraGuide() {
 
       <View className='guide-metrics'>
         <View className='guide-metric'>
-          <Text className='guide-metric-label'>规格代码</Text>
-          <Text className='guide-metric-value'>{spec?.code || '-'}</Text>
-        </View>
-        <View className='guide-metric'>
           <Text className='guide-metric-label'>像素尺寸</Text>
           <Text className='guide-metric-value'>{spec ? `${spec.widthPx}x${spec.heightPx}px` : '-'}</Text>
         </View>
         <View className='guide-metric'>
           <Text className='guide-metric-label'>分辨率</Text>
-          <Text className='guide-metric-value'>{spec ? `${spec.dpi}DPI` : '-'}</Text>
+          <Text className='guide-metric-value'>{spec ? `${spec.dpi}` : '-'}</Text>
         </View>
       </View>
 

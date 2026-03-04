@@ -89,7 +89,7 @@ export default function Index() {
               </View>
               <Text className='home-spec-size'>像素尺寸：{spec.widthPx}x{spec.heightPx}px</Text>
               <View className='home-spec-chip'>
-                <Text className='home-spec-chip-text'>{spec.dpi} DPI</Text>
+                <Text className='home-spec-chip-text'>分辨率：{spec.dpi}</Text>
               </View>
             </View>
           ))}

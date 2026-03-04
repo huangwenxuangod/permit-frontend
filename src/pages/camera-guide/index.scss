@@ -10,8 +10,19 @@
 }
 
 .guide-back {
-  font-size: 12px;
-  color: #16a34a;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.08);
+}
+
+.guide-back-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .guide-title {
@@ -57,7 +68,7 @@
 .guide-metrics {
   margin-top: 16px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   background: #f8fafc;
   padding: 12px;

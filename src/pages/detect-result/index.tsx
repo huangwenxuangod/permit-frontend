@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { icons } from '../../assets/icons'
 import './index.scss'
 
 export default function DetectResult() {
@@ -24,7 +25,9 @@ export default function DetectResult() {
   return (
     <View className='result'>
       <View className='result-header'>
-        <Text className='result-back' onClick={() => Taro.navigateBack()}>返回</Text>
+        <View className='result-back' onClick={() => Taro.navigateBack()}>
+          <Image className='result-back-icon' src={icons.arrowLeft} />
+        </View>
         <Text className='result-title'>检测不通过</Text>
         <View className='result-space' />
       </View>
@@ -37,13 +40,25 @@ export default function DetectResult() {
         </View>
       </View>
 
-      <View className='result-tips'>
-        <Text className='result-tips-title'>请仔细阅读后重新拍摄</Text>
+      <View className='result-section'>
+        <Text className='result-section-title'>重新拍摄要点</Text>
         <View className='result-tip-list'>
-          <Text>抬头挺胸，双眼平视前方</Text>
-          <Text>面部明亮，无明显阴影</Text>
-          <Text>完整露出耳朵、眉毛</Text>
-          <Text>不要佩戴粗框眼镜</Text>
+          <View className='result-tip-item'>
+            <View className='result-tip-index'>1</View>
+            <Text className='result-tip-text'>抬头挺胸，双眼平视前方</Text>
+          </View>
+          <View className='result-tip-item'>
+            <View className='result-tip-index'>2</View>
+            <Text className='result-tip-text'>面部明亮，无明显阴影</Text>
+          </View>
+          <View className='result-tip-item'>
+            <View className='result-tip-index'>3</View>
+            <Text className='result-tip-text'>完整露出耳朵、眉毛</Text>
+          </View>
+          <View className='result-tip-item'>
+            <View className='result-tip-index'>4</View>
+            <Text className='result-tip-text'>不要佩戴粗框眼镜</Text>
+          </View>
         </View>
       </View>
 
