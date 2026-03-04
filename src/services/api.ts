@@ -190,6 +190,8 @@ const request = async <T,>({ url, method = 'GET', data, header }: RequestOptions
   }
 }
 
+const createIdempotencyKey = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`
+
 const getSpecs = (query?: string) => {
   console.log('[api] getSpecs', { query })
   return request<Spec[]>({
@@ -311,7 +313,13 @@ const getOrders = (page = 1, pageSize = 20) => {
 }
 
 const getDownloadInfo = (taskId: string) => {
-  return request<{ taskId: string; urls: Record<string, string>; expiresIn: number }>({
+  return request<{
+    taskId: string
+    urls: Record<string, string>
+    receiptUrls?: Record<string, string>
+    layoutUrls?: Record<string, string>
+    expiresIn: number
+  }>({
     url: `/api/download/${taskId}`,
     method: 'GET'
   })
@@ -329,7 +337,17 @@ const payWechat = (orderId: string, openid?: string) => {
   return request<{ orderId: string; payParams: PayParams }>({
     url: '/api/pay/wechat',
     method: 'POST',
-    data: openid ? { orderId, openid } : { orderId }
+    data: openid ? { orderId, openid } : { orderId },
+    header: { 'Idempotency-Key': createIdempotencyKey() }
+  })
+}
+
+const payCallback = (orderId: string, status: 'paid' | 'failed' | 'canceled') => {
+  return request<{ orderId: string; status: string }>({
+    url: '/api/pay/callback',
+    method: 'POST',
+    data: { orderId, status },
+    header: { 'Idempotency-Key': createIdempotencyKey() }
   })
 }
 
@@ -383,6 +401,7 @@ export const api = {
   getDownloadInfo,
   createDownloadToken,
   payWechat,
+  payCallback,
   getMe,
   faceEnhance,
   getAIPhotoTemplates,

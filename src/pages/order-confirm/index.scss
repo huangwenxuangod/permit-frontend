@@ -203,10 +203,41 @@
   color: #64748b;
 }
 
+.order-city-body {
+  display: flex;
+  gap: 12px;
+  max-height: 360px;
+}
+
+.order-province-list {
+  width: 104px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.order-province-item {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 12px;
+  color: #475569;
+  text-align: center;
+}
+
+.order-province-item.active {
+  background: #16a34a;
+  color: #ffffff;
+}
+
 .order-city-grid {
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+  overflow-y: auto;
 }
 
 .order-city-item {
