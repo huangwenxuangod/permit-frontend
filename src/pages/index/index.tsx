@@ -7,9 +7,9 @@ import { api, Spec } from '../../services/api'
 import './index.scss'
 
 const quickActions = [
-  { title: '制作证件照', subtitle: '多类型规格', icon: icons.camera, path: '/pages/search/index' },
-  { title: '修复老照片', subtitle: '智能修复', icon: icons.edit, path: '/pages/search/index' },
-  { title: '回执专区', subtitle: '快速办理', icon: icons.creditCard, path: '/pages/search/index' }
+  { title: '制作证件照', subtitle: '多类型规格', icon: icons.camera, path: '/subpackages/search/index' },
+  { title: '修复老照片', subtitle: '智能修复', icon: icons.edit, path: '/subpackages/search/index' },
+  { title: '回执专区', subtitle: '快速办理', icon: icons.creditCard, path: '/subpackages/search/index' }
 ]
 
 const featureActions = [
@@ -25,12 +25,12 @@ export default function Index() {
   }
 
   const handleToSearch = () => {
-    Taro.navigateTo({ url: '/pages/search/index' })
+    Taro.navigateTo({ url: '/subpackages/search/index' })
   }
 
   const handleSpecSelect = (spec: Spec) => {
     Taro.setStorageSync('selectedSpec', spec)
-    Taro.navigateTo({ url: '/pages/camera-guide/index' })
+    Taro.navigateTo({ url: '/subpackages/camera-guide/index' })
   }
 
   useDidShow(() => {

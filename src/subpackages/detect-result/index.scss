@@ -1,0 +1,155 @@
+.result {
+  padding: 16px 16px 88px;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-back {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.08);
+}
+
+.result-back-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.result-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.result-space {
+  width: 40px;
+}
+
+.result-card {
+  margin-top: 20px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.08);
+  display: flex;
+  gap: 12px;
+}
+
+.result-thumb {
+  width: 80px;
+  height: 100px;
+  border-radius: 12px;
+  background: #e2e8f0;
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.result-info-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.result-info-desc {
+  font-size: 12px;
+  color: #475569;
+}
+
+.result-section {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+}
+
+.result-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.result-tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-tip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.result-tip-index {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.result-tip-text {
+  font-size: 12px;
+  color: #475569;
+}
+
+.result-actions {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.result-btn {
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.result-btn.ghost {
+  border: 1px solid #cbd5f5;
+  color: #334155;
+  background: #ffffff;
+}
+
+.result-btn.primary {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 12px 20px rgba(22, 163, 74, 0.25);
+}
+
+.result-preview {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.result-preview-text {
+  font-size: 12px;
+  color: #16a34a;
+  text-decoration: underline;
+}

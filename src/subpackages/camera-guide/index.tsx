@@ -11,7 +11,7 @@ export default function CameraGuide() {
 
   const handlePick = (mode: 'album' | 'camera') => {
     Taro.setStorageSync('captureMode', mode)
-    Taro.navigateTo({ url: '/pages/camera/index' })
+    Taro.navigateTo({ url: '/subpackages/camera/index' })
   }
 
   useEffect(() => {

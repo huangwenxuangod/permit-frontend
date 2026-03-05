@@ -2,14 +2,21 @@ export default defineAppConfig({
   pages: [
     'pages/index/index',
     'pages/orders/index',
-    'pages/my/index',
-    'pages/search/index',
-    'pages/camera-guide/index',
-    'pages/camera/index',
-    'pages/detection/index',
-    'pages/detect-result/index',
-    'pages/preview/index',
-    'pages/order-confirm/index'
+    'pages/my/index'
+  ],
+  subPackages: [
+    {
+      root: 'subpackages',
+      pages: [
+        'search/index',
+        'camera-guide/index',
+        'camera/index',
+        'detection/index',
+        'detect-result/index',
+        'preview/index',
+        'order-confirm/index'
+      ]
+    }
   ],
   tabBar: {
     color: '#9CA3AF',

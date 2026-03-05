@@ -22,7 +22,7 @@ export default function Preview() {
   const [toolLoading, setToolLoading] = useState('')
 
   const handleNext = () => {
-    Taro.navigateTo({ url: '/pages/order-confirm/index' })
+    Taro.navigateTo({ url: '/subpackages/order-confirm/index' })
   }
 
   const getPalette = (source?: Task | null) => {

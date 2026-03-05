@@ -1,0 +1,133 @@
+import React, { useEffect, useRef, useState } from 'react'
+import { View, Text, Image } from '@tarojs/components'
+import Taro from '@tarojs/taro'
+import { api } from '../../services/api'
+import { icons } from '../../assets/icons'
+import './index.scss'
+
+const initialChecks = [
+  { label: '检测人像取景范围、头肩姿势是否标准', done: false },
+  { label: '检测相片光线、色彩、清晰度', done: false },
+  { label: '检测脸部表情、着装是否符合证件照要求', done: false },
+  { label: '优化照片画质', done: false }
+]
+
+export default function Detection() {
+  const [checks, setChecks] = useState(initialChecks)
+  const [statusText, setStatusText] = useState('证件照生成中，预计耗时 5 秒左右')
+  const progressRef = useRef(0)
+  const navigatedRef = useRef(false)
+
+  const handleFinish = () => {
+    if (navigatedRef.current) return
+    navigatedRef.current = true
+    Taro.redirectTo({ url: '/subpackages/preview/index' })
+  }
+
+  useEffect(() => {
+    const taskId = Taro.getStorageSync('taskId') as string | undefined
+    if (!taskId) {
+      setStatusText('未找到任务，请重新拍摄')
+      return
+    }
+    let running = true
+    let timer: ReturnType<typeof setInterval> | null = null
+    const updateProgress = () => {
+      progressRef.current = Math.min(progressRef.current + 1, initialChecks.length)
+      setChecks(initialChecks.map((item, index) => ({
+        ...item,
+        done: index < progressRef.current
+      })))
+    }
+    const poll = async () => {
+      if (!running || navigatedRef.current) return
+      try {
+        const task = await api.getTask(taskId)
+        Taro.setStorageSync('task', task)
+        if (task.status === 'done') {
+          setChecks(initialChecks.map(item => ({ ...item, done: true })))
+          setStatusText('生成完成')
+          if (running) {
+            running = false
+            if (timer) clearInterval(timer)
+            if (!navigatedRef.current) {
+              navigatedRef.current = true
+              Taro.redirectTo({ url: '/subpackages/preview/index' })
+            }
+          }
+          return
+        }
+        if (task.status === 'failed' || task.errorMsg) {
+          Taro.setStorageSync('taskError', task.errorMsg || '检测未通过')
+          if (running) {
+            running = false
+            if (timer) clearInterval(timer)
+            if (!navigatedRef.current) {
+              navigatedRef.current = true
+              Taro.redirectTo({ url: '/subpackages/detect-result/index' })
+            }
+          }
+          return
+        }
+        updateProgress()
+      } catch (error) {
+        setStatusText('网络异常，正在重试')
+      }
+    }
+    poll()
+    timer = setInterval(poll, 2000)
+    return () => {
+      running = false
+      if (timer) clearInterval(timer)
+    }
+  }, [])
+
+  const completedCount = checks.filter(item => item.done).length
+  const progressPercent = Math.round((completedCount / initialChecks.length) * 100)
+
+  return (
+    <View className='detection'>
+      <View className='detection-header'>
+        <View className='detection-back' onClick={() => Taro.navigateBack()}>
+          <Image className='detection-back-icon' src={icons.arrowLeft} />
+        </View>
+        <Text className='detection-title'>检测相片</Text>
+        <View className='detection-space' />
+      </View>
+
+      <View className='detection-stage-card'>
+        <View className='detection-stage'>
+          <View className='detection-photo'>
+            <View className='detection-grid' />
+            <View className='detection-face' />
+            <View className='detection-scan' />
+          </View>
+        </View>
+        <View className='detection-progress'>
+          <View className='detection-progress-bar' style={{ width: `${progressPercent}%` }} />
+        </View>
+        <View className='detection-progress-row'>
+          <Text className='detection-status-title'>正在检测</Text>
+          <Text className='detection-progress-text'>{progressPercent}%</Text>
+        </View>
+        <Text className='detection-status'>{statusText}</Text>
+      </View>
+
+      <View className='detection-list-card'>
+        <Text className='detection-list-title'>检测项</Text>
+        <View className='detection-list'>
+          {checks.map(item => (
+            <View key={item.label} className='detection-item'>
+              <View className={`detection-dot ${item.done ? 'done' : ''}`} />
+              <Text className='detection-text'>{item.label}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View className='detection-footer'>
+        <View className='detection-btn' onClick={handleFinish}>跳过动画</View>
+      </View>
+    </View>
+  )
+}

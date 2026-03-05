@@ -247,7 +247,6 @@ const uploadFile = async (filePath: string) => {
 
 const createTask = (payload: {
   specCode?: string
-  itemId?: number
   sourceObjectKey: string
   defaultBackground?: string
   availableColors?: string[]

@@ -1,9 +1,8 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
-
+import fs from 'fs'
+import path from 'path'
 import devConfig from './dev'
 import prodConfig from './prod'
-import path from 'path'
-import fs from 'fs'
 
 const rootPath = process.cwd()
 function loadEnv(file: string) {

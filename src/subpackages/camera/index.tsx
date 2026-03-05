@@ -61,7 +61,7 @@ export default function CameraPage() {
       })
       Taro.setStorageSync('taskId', task.id)
       Taro.setStorageSync('task', task)
-      Taro.navigateTo({ url: '/pages/detection/index' })
+      Taro.navigateTo({ url: '/subpackages/detection/index' })
     } catch (error) {
       Taro.showToast({ title: '上传失败，请重试', icon: 'none' })
     } finally {
